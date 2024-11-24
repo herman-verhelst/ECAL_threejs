@@ -5,7 +5,7 @@ import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeom
 export default class SoftLightScene {
   constructor() {
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color("#f5f5f5");
+    this.scene.background = new THREE.Color("#575656");
 
     this.setupRenderer();
     this.setupCamera();
@@ -107,23 +107,87 @@ export default class SoftLightScene {
   }
 
   createFloor() {
-    // Create a large floor plane
-    const floorGeometry = new THREE.PlaneGeometry(50, 50);
-    const floorMaterial = new THREE.MeshStandardMaterial({
+    const floorSize = 50;
+    const holeSize = 3.2; // Slightly larger than cube size
+    const spacing = 8; // Same spacing as cubes
+
+    // Create floor shape with holes
+    const shape = new THREE.Shape();
+    shape.moveTo(-floorSize / 2, -floorSize / 2);
+    shape.lineTo(floorSize / 2, -floorSize / 2);
+    shape.lineTo(floorSize / 2, floorSize / 2);
+    shape.lineTo(-floorSize / 2, floorSize / 2);
+    shape.lineTo(-floorSize / 2, -floorSize / 2);
+
+    // Create holes for each cube position
+    const holes = [];
+    for (let i = 0; i < 3; i++) {
+      for (let j = 0; j < 3; j++) {
+        const holeShape = new THREE.Path();
+        const x = (j - 1) * spacing - holeSize / 2;
+        const y = (i - 1) * spacing - holeSize / 2;
+
+        // Create rounded rectangle for each hole
+        const radius = 0.4; // Corner radius matching cube roundness
+
+        // Start at top-left + radius
+        holeShape.moveTo(x + radius, y);
+
+        // Top edge
+        holeShape.lineTo(x + holeSize - radius, y);
+        // Top-right corner
+        holeShape.quadraticCurveTo(x + holeSize, y, x + holeSize, y + radius);
+
+        // Right edge
+        holeShape.lineTo(x + holeSize, y + holeSize - radius);
+        // Bottom-right corner
+        holeShape.quadraticCurveTo(
+          x + holeSize,
+          y + holeSize,
+          x + holeSize - radius,
+          y + holeSize
+        );
+
+        // Bottom edge
+        holeShape.lineTo(x + radius, y + holeSize);
+        // Bottom-left corner
+        holeShape.quadraticCurveTo(x, y + holeSize, x, y + holeSize - radius);
+
+        // Left edge
+        holeShape.lineTo(x, y + radius);
+        // Top-left corner
+        holeShape.quadraticCurveTo(x, y, x + radius, y);
+
+        holes.push(holeShape);
+      }
+    }
+
+    // Add holes to shape
+    shape.holes = holes;
+
+    // Create geometry from shape
+    const geometry = new THREE.ShapeGeometry(shape);
+    const material = new THREE.MeshStandardMaterial({
       color: "#f0e6e6",
       roughness: 0.8,
       metalness: 0.2,
+      side: THREE.DoubleSide,
     });
-    floorMaterial.side = THREE.DoubleSide;
 
-    this.floor = new THREE.Mesh(floorGeometry, floorMaterial);
-    // make the floor visible from both side
-
-    // Rotate floor to face y-axis and rotate 45 degrees around y
-    this.floor.rotation.x = -Math.PI / 2; // 45-degree rotation around Y
-    this.floor.position.y = 0; // Optional: lower the floor slightly
+    this.floor = new THREE.Mesh(geometry, material);
+    this.floor.rotation.x = -Math.PI / 2;
     this.floor.receiveShadow = true;
     this.scene.add(this.floor);
+
+    // Optional: Add inner edges for holes
+    const edgeGeometry = new THREE.EdgesGeometry(geometry);
+    const edgeMaterial = new THREE.LineBasicMaterial({
+      color: "#e0d6d6",
+      transparent: true,
+      opacity: 0,
+    });
+    const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
+    this.floor.add(edges);
   }
 
   createCubes() {
