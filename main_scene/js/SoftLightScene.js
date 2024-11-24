@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-
+import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 export default class SoftLightScene {
   constructor() {
     this.scene = new THREE.Scene();
@@ -64,7 +64,7 @@ export default class SoftLightScene {
     );
 
     // Position for 45-degree view
-    this.camera.position.set(15, 15, 15);
+    this.camera.position.set(14, 15, 15);
     this.camera.lookAt(0, 0, 0);
   }
 
@@ -217,6 +217,51 @@ export default class SoftLightScene {
   }
 
   createCubes() {
+    /****************** */
+    const texture = new THREE.CanvasTexture(this.generateTexture());
+    texture.magFilter = THREE.NearestFilter;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.repeat.set(1, 3.5);
+    const hdrEquirect = new RGBELoader()
+      .setPath("textures/equirectangular/")
+      .load("royal_esplanade_1k.hdr", function () {
+        hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
+
+        // init();
+        // render();
+      });
+    const params = {
+      color: 0xffffff,
+      transmission: 1,
+      opacity: 1,
+      metalness: 0,
+      roughness: 0,
+      ior: 1.5,
+      thickness: 0.01,
+      specularIntensity: 1,
+      specularColor: 0xffffff,
+      envMapIntensity: 1,
+      lightIntensity: 1,
+      exposure: 1,
+    };
+
+    const material2 = new THREE.MeshPhysicalMaterial({
+      color: params.color,
+      metalness: params.metalness,
+      roughness: params.roughness,
+      ior: params.ior,
+      alphaMap: texture,
+      envMap: hdrEquirect,
+      envMapIntensity: params.envMapIntensity,
+      transmission: params.transmission, // use material.transmission for glass materials
+      specularIntensity: params.specularIntensity,
+      specularColor: params.specularColor,
+      opacity: params.opacity,
+      side: false,
+      transparent: true,
+    });
+    /****************** */
     const pastelColors = [
       "#FFB5E8", // pink
       "#B5DEFF", // blue
@@ -253,7 +298,7 @@ export default class SoftLightScene {
           metalness: 0.1,
         });
 
-        const cube = new THREE.Mesh(geometry, material);
+        const cube = new THREE.Mesh(geometry, material2);
 
         // Calculate center offset based on gridSize
         const centerOffset = ((this.gridSize - 1) * spacing) / 2;
@@ -348,5 +393,17 @@ export default class SoftLightScene {
     const c3 = c1 + 1;
 
     return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
+  }
+
+  generateTexture() {
+    const canvas = document.createElement("canvas");
+    canvas.width = 2;
+    canvas.height = 2;
+
+    const context = canvas.getContext("2d");
+    context.fillStyle = "white";
+    context.fillRect(0, 0, 2, 2);
+
+    return canvas;
   }
 }
