@@ -7,6 +7,7 @@ export default class SoftLightScene {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#575656");
     this.cubeSize = 4;
+    this.gridSize = 3;
 
     this.setupRenderer();
     this.setupCamera();
@@ -126,11 +127,13 @@ export default class SoftLightScene {
 
     // Create holes for each cube position
     const holes = [];
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < this.gridSize; i++) {
+      for (let j = 0; j < this.gridSize; j++) {
         const holeShape = new THREE.Path();
-        const x = (j - 1) * spacing - holeSize / 2;
-        const y = (i - 1) * spacing - holeSize / 2;
+        // Calculate center offset based on gridSize
+        const centerOffset = ((this.gridSize - 1) * spacing) / 2;
+        const x = j * spacing - centerOffset - holeSize / 2;
+        const y = i * spacing - centerOffset - holeSize / 2;
 
         // Create rounded rectangle for each hole
         const radius = 0.4; // Corner radius matching cube roundness
@@ -233,8 +236,8 @@ export default class SoftLightScene {
     this.cubes = []; // Array to store cube references
 
     // Create and position cubes relative to group center
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
+    for (let i = 0; i < this.gridSize; i++) {
+      for (let j = 0; j < this.gridSize; j++) {
         const geometry = new RoundedBoxGeometry(
           cubeSize,
           cubeSize * Math.random() + cubeSize,
@@ -244,16 +247,17 @@ export default class SoftLightScene {
         );
 
         const material = new THREE.MeshStandardMaterial({
-          color: pastelColors[i * 3 + j],
+          color: pastelColors[(i * 3 + j) % pastelColors.length],
           roughness: 0.6,
           metalness: 0.1,
         });
 
         const cube = new THREE.Mesh(geometry, material);
 
-        // Position relative to center
-        cube.position.x = (j - 1) * spacing;
-        cube.position.z = (i - 1) * spacing;
+        // Calculate center offset based on gridSize
+        const centerOffset = ((this.gridSize - 1) * spacing) / 2;
+        cube.position.x = j * spacing - centerOffset;
+        cube.position.z = i * spacing - centerOffset;
         cube.position.y = -1.5 * cubeSize;
 
         cube.castShadow = true;
@@ -272,20 +276,6 @@ export default class SoftLightScene {
 
     // Add the entire group to the scene
     this.scene.add(this.cubesGroup);
-  }
-
-  roundEdges(geometry, radius) {
-    // Helper function to round cube edges
-    const positions = geometry.attributes.position;
-    const vector = new THREE.Vector3();
-
-    for (let i = 0; i < positions.count; i++) {
-      vector.fromBufferAttribute(positions, i);
-      vector.normalize().multiplyScalar(radius);
-      positions.setXYZ(i, vector.x, vector.y, vector.z);
-    }
-
-    return geometry;
   }
 
   render() {
