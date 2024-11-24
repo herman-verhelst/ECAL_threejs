@@ -6,6 +6,7 @@ export default class SoftLightScene {
   constructor() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#575656");
+    this.cubeSize = 4;
 
     this.setupRenderer();
     this.setupCamera();
@@ -24,12 +25,12 @@ export default class SoftLightScene {
     // Start animation loop
     this.render();
 
-    // Add animation properties
+    // Update animation properties
     this.time = 0;
-    this.animationSpeed = 0.05;
-    this.amplitude = 4; // Height of the motion
-    this.frequency = 0.2; // Speed of the wave
-    this.phaseOffset = 1.5; // Offset between cubes
+    this.animationSpeed = 0.005; // Reduced for smoother motion
+    this.amplitude = 4;
+    this.duration = 80; // Duration of one complete cycle
+    this.phaseOffset = 20; // Offset between cubes in frames
 
     // Track cube states
     this.cubeStates = new Array(9).fill(false); // Track if each cube has played sound
@@ -111,7 +112,7 @@ export default class SoftLightScene {
 
   createFloor() {
     const floorSize = 51;
-    const holeSize = 3.2; // Slightly larger than cube size
+    const holeSize = this.cubeSize + 0.4; // Slightly larger than cube size
     const spacing = 8; // Same spacing as cubes
     const holeDepth = 3; // Depth of the extruded holes
 
@@ -224,7 +225,7 @@ export default class SoftLightScene {
       "#FFE5B5", // yellow
     ];
 
-    const cubeSize = 2.8;
+    const cubeSize = this.cubeSize;
     const spacing = 8;
 
     // Create a group for all cubes
@@ -236,7 +237,7 @@ export default class SoftLightScene {
       for (let j = 0; j < 3; j++) {
         const geometry = new RoundedBoxGeometry(
           cubeSize,
-          cubeSize,
+          cubeSize * Math.random() + cubeSize,
           cubeSize,
           6,
           0.4
@@ -253,7 +254,7 @@ export default class SoftLightScene {
         // Position relative to center
         cube.position.x = (j - 1) * spacing;
         cube.position.z = (i - 1) * spacing;
-        cube.position.y = -cubeSize / 5;
+        cube.position.y = -1.5 * cubeSize;
 
         cube.castShadow = true;
         cube.receiveShadow = true;
@@ -315,22 +316,22 @@ export default class SoftLightScene {
       // Calculate phase based on position
       const phase = (row + col) * this.phaseOffset;
 
-      // Calculate sine value for current position
-      const sineValue = Math.sin(
-        this.time * this.frequency * Math.PI * 2 + phase
-      );
+      // Calculate progress (0 to 1) with phase offset
+      let progress =
+        ((this.time * 100 + phase) % this.duration) / this.duration;
 
-      // Calculate y position using sine wave
-      const y = cube.initialY + this.amplitude * sineValue;
+      // Create up and down motion by modifying progress
+      if (progress > 0.5) {
+        progress = 1 - (progress - 0.5) * 2; // Down motion
+      } else {
+        progress = progress * 2; // Up motion
+      }
 
-      //   // Check if cube is at peak and hasn't played sound yet
-      //   if (sineValue > 0.99 && !this.cubeStates[index]) {
-      //     this.cubeStates[index] = true; // Mark sound as played
-      //   }
-      //   // Reset state when cube is no longer at peak
-      //   else if (sineValue < 0.99) {
-      //     this.cubeStates[index] = false;
-      //   }
+      // Apply easeOutBack to the progress
+      const easedProgress = this.easeOutBack(progress);
+
+      // Calculate y position
+      const y = cube.initialY + this.amplitude * easedProgress;
 
       // Set new position
       cube.position.y = y;
@@ -349,5 +350,12 @@ export default class SoftLightScene {
     this.camera.updateProjectionMatrix();
 
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  easeOutBack(x) {
+    const c1 = 1.70158;
+    const c3 = c1 + 1;
+
+    return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
   }
 }
