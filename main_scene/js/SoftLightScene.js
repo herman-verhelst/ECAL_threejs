@@ -23,6 +23,13 @@ export default class SoftLightScene {
 
     // Start animation loop
     this.render();
+
+    // Add animation properties
+    this.time = 0;
+    this.animationSpeed = 0.05;
+    this.amplitude = 2; // Height of the motion
+    this.frequency = 0.3; // Speed of the wave
+    this.phaseOffset = 2; // Offset between cubes
   }
 
   setupRenderer() {
@@ -137,6 +144,7 @@ export default class SoftLightScene {
 
     // Create a group for all cubes
     this.cubesGroup = new THREE.Group();
+    this.cubes = []; // Array to store cube references
 
     // Create and position cubes relative to group center
     for (let i = 0; i < 3; i++) {
@@ -148,7 +156,7 @@ export default class SoftLightScene {
           6,
           0.4
         );
-        // const geometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+
         const material = new THREE.MeshStandardMaterial({
           color: pastelColors[i * 3 + j],
           roughness: 0.6,
@@ -160,12 +168,18 @@ export default class SoftLightScene {
         // Position relative to center
         cube.position.x = (j - 1) * spacing;
         cube.position.z = (i - 1) * spacing;
-        cube.position.y = cubeSize / 2;
+        cube.position.y = -cubeSize / 5;
 
         cube.castShadow = true;
         cube.receiveShadow = true;
 
-        // Add cube to group instead of scene
+        // Store initial Y position
+        cube.initialY = cube.position.y;
+
+        // Store cube reference
+        this.cubes.push(cube);
+
+        // Add cube to group
         this.cubesGroup.add(cube);
       }
     }
@@ -200,10 +214,31 @@ export default class SoftLightScene {
 
   // Animation loop method
   update() {
-    // Add controls update
+    // Update controls
     if (this.controls) {
       this.controls.update();
     }
+
+    // Update time
+    this.time += this.animationSpeed;
+
+    // Update each cube's position
+    this.cubes.forEach((cube, index) => {
+      const row = Math.floor(index / 3);
+      const col = index % 3;
+
+      // Calculate phase based on position
+      const phase = (row + col) * this.phaseOffset;
+
+      // Calculate y position using sine wave
+      const y =
+        cube.initialY +
+        this.amplitude *
+          Math.sin(this.time * this.frequency * Math.PI * 2 + phase);
+
+      // Set new position
+      cube.position.y = y;
+    });
   }
 
   // Resize handler
