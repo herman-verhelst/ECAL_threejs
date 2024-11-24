@@ -36,6 +36,11 @@ export default class SoftLightScene {
       //   backgroundColor: "#575656",
       //   floorColor: "#f0e6e6",
       //   innerWallColor: "#e0d6d6",
+      //   material option
+      transparentMaterial: false,
+
+      // Add animation control
+      isAnimating: true, // New parameter to control animation state
     };
 
     this.setupRenderer();
@@ -130,6 +135,7 @@ export default class SoftLightScene {
     mainLight.shadow.camera.top = 15;
     mainLight.shadow.camera.bottom = -15;
     mainLight.shadow.radius = 5;
+
     this.scene.add(mainLight);
 
     // Ambient light for soft fill
@@ -276,7 +282,7 @@ export default class SoftLightScene {
     //   exposure: 1,
     // };
     const params = this.params;
-    const material2 = new THREE.MeshPhysicalMaterial({
+    this.material2 = new THREE.MeshPhysicalMaterial({
       color: params.color,
       metalness: params.metalness,
       roughness: params.roughness,
@@ -284,15 +290,17 @@ export default class SoftLightScene {
       alphaMap: texture,
       envMap: hdrEquirect,
       envMapIntensity: params.envMapIntensity,
-      transmission: params.transmission, // use material.transmission for glass materials
+      transmission: params.transmission,
       specularIntensity: params.specularIntensity,
       specularColor: params.specularColor,
       opacity: params.opacity,
       side: false,
       transparent: true,
+      shadowSide: THREE.DoubleSide,
+      depthWrite: false,
     });
     /****************** */
-    const pastelColors = [
+    this.pastelColors = [
       "#FFB5E8", // pink
       "#B5DEFF", // blue
       "#E7FFAC", // green
@@ -322,13 +330,16 @@ export default class SoftLightScene {
           0.4
         );
 
-        const material = new THREE.MeshStandardMaterial({
-          color: pastelColors[(i * 3 + j) % pastelColors.length],
+        const initialMaterial = new THREE.MeshStandardMaterial({
+          color:
+            this.pastelColors[
+              (i * this.gridSize + j) % this.pastelColors.length
+            ],
           roughness: 0.6,
           metalness: 0.1,
         });
 
-        const cube = new THREE.Mesh(geometry, material2);
+        const cube = new THREE.Mesh(geometry, initialMaterial);
 
         // Calculate center offset based on gridSize
         const centerOffset = ((this.gridSize - 1) * spacing) / 2;
@@ -370,26 +381,29 @@ export default class SoftLightScene {
       this.controls.update();
     }
 
-    this.time += this.animationSpeed;
+    // Only update animation if isAnimating is true
+    if (this.params.isAnimating) {
+      this.time += this.animationSpeed;
 
-    this.cubes.forEach((cube, index) => {
-      const row = Math.floor(index / this.gridSize);
-      const col = index % this.gridSize;
+      this.cubes.forEach((cube, index) => {
+        const row = Math.floor(index / this.gridSize);
+        const col = index % this.gridSize;
 
-      const phase = (row + col) * this.phaseOffset;
-      let progress =
-        ((this.time * 100 + phase) % this.duration) / this.duration;
+        const phase = (row + col) * this.phaseOffset;
+        let progress =
+          ((this.time * 100 + phase) % this.duration) / this.duration;
 
-      if (progress > 0.5) {
-        progress = 1 - (progress - 0.5) * 2;
-      } else {
-        progress = progress * 2;
-      }
+        if (progress > 0.5) {
+          progress = 1 - (progress - 0.5) * 2;
+        } else {
+          progress = progress * 2;
+        }
 
-      const easedProgress = this.easeOutBack(progress);
-      const y = cube.initialY + this.amplitude * easedProgress;
-      cube.position.y = y;
-    });
+        const easedProgress = this.easeOutBack(progress);
+        const y = cube.initialY + this.amplitude * easedProgress;
+        cube.position.y = y;
+      });
+    }
   }
 
   // Resize handler
@@ -428,50 +442,74 @@ export default class SoftLightScene {
   setupGUI() {
     this.gui = new dat.GUI();
 
-    // Material folder
-    const materialFolder = this.gui.addFolder("Material");
-    materialFolder
+    // Material type selector
+    const materialTypeFolder = this.gui.addFolder("Material Type");
+    materialTypeFolder
+      .add(this.params, "transparentMaterial")
+      .name("Use Transparent Material")
+      .onChange(() => this.updateMaterials());
+    materialTypeFolder.open();
+
+    // Transparent material properties
+    const transparentMaterialFolder = this.gui.addFolder(
+      "Transparent Material Properties"
+    );
+    transparentMaterialFolder
       .addColor(this.params, "color")
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "transmission", 0, 1)
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "opacity", 0, 1)
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "metalness", 0, 1)
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "roughness", 0, 1)
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "ior", 1, 2.333)
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "thickness", 0, 5)
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "specularIntensity", 0, 1)
       .onChange(() => this.updateMaterials());
-    materialFolder
+    transparentMaterialFolder
       .add(this.params, "envMapIntensity", 0, 3)
       .onChange(() => this.updateMaterials());
-    materialFolder.open();
+
+    // Add Animation Control folder
+    const animationFolder = this.gui.addFolder("Animation Control");
+    animationFolder.add(this.params, "isAnimating").name("Animation On/Off");
+    animationFolder.open();
   }
 
   updateMaterials() {
-    // Update all cubes' materials
-    this.cubes.forEach((cube) => {
-      cube.material.color.set(this.params.color);
-      cube.material.transmission = this.params.transmission;
-      cube.material.opacity = this.params.opacity;
-      cube.material.metalness = this.params.metalness;
-      cube.material.roughness = this.params.roughness;
-      cube.material.ior = this.params.ior;
-      cube.material.thickness = this.params.thickness;
-      cube.material.specularIntensity = this.params.specularIntensity;
-      cube.material.envMapIntensity = this.params.envMapIntensity;
+    this.cubes.forEach((cube, index) => {
+      if (this.params.transparentMaterial) {
+        // Use transparent material (material2)
+        cube.material = this.material2;
+        cube.material.color.set(this.params.color);
+        cube.material.transmission = this.params.transmission;
+        cube.material.opacity = this.params.opacity;
+        cube.material.metalness = this.params.metalness;
+        cube.material.roughness = this.params.roughness;
+        cube.material.ior = this.params.ior;
+        cube.material.thickness = this.params.thickness;
+        cube.material.specularIntensity = this.params.specularIntensity;
+        cube.material.envMapIntensity = this.params.envMapIntensity;
+      } else {
+        // Use standard material with original pastel colors
+        cube.material = new THREE.MeshStandardMaterial({
+          color: this.pastelColors[index % this.pastelColors.length],
+          roughness: 0.6,
+          metalness: 0.1,
+        });
+      }
     });
   }
 }
