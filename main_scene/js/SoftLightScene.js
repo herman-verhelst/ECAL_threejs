@@ -2,6 +2,8 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+import * as dat from "dat.gui";
+
 export default class SoftLightScene {
   constructor() {
     this.scene = new THREE.Scene();
@@ -9,6 +11,32 @@ export default class SoftLightScene {
     this.cubeSize = 4;
     this.cubeSpacing = Math.max(this.cubeSize + 0.4, 8);
     this.gridSize = 3;
+
+    // Add GUI parameters
+    this.params = {
+      // Material parameters
+      color: 0xffffff,
+      transmission: 1,
+      opacity: 1,
+      metalness: 0,
+      roughness: 0,
+      ior: 1.5,
+      thickness: 0.01,
+      specularIntensity: 1,
+      specularColor: 0xffffff,
+      envMapIntensity: 1,
+
+      //   // Animation parameters
+      //   animationSpeed: 0.005,
+      //   amplitude: this.cubeSize,
+      //   duration: 80,
+      //   phaseOffset: 20,
+
+      //   // Scene parameters
+      //   backgroundColor: "#575656",
+      //   floorColor: "#f0e6e6",
+      //   innerWallColor: "#e0d6d6",
+    };
 
     this.setupRenderer();
     this.setupCamera();
@@ -36,6 +64,8 @@ export default class SoftLightScene {
 
     // Track cube states
     this.cubeStates = new Array(9).fill(false); // Track if each cube has played sound
+
+    this.setupGUI();
   }
 
   setupRenderer() {
@@ -231,21 +261,21 @@ export default class SoftLightScene {
         // init();
         // render();
       });
-    const params = {
-      color: 0xffffff,
-      transmission: 1,
-      opacity: 1,
-      metalness: 0,
-      roughness: 0,
-      ior: 1.5,
-      thickness: 0.01,
-      specularIntensity: 1,
-      specularColor: 0xffffff,
-      envMapIntensity: 1,
-      lightIntensity: 1,
-      exposure: 1,
-    };
-
+    // const params = {
+    //   color: 0xffffff,
+    //   transmission: 1,
+    //   opacity: 1,
+    //   metalness: 0,
+    //   roughness: 0,
+    //   ior: 1.5,
+    //   thickness: 0.01,
+    //   specularIntensity: 1,
+    //   specularColor: 0xffffff,
+    //   envMapIntensity: 1,
+    //   lightIntensity: 1,
+    //   exposure: 1,
+    // };
+    const params = this.params;
     const material2 = new THREE.MeshPhysicalMaterial({
       color: params.color,
       metalness: params.metalness,
@@ -336,40 +366,28 @@ export default class SoftLightScene {
 
   // Animation loop method
   update() {
-    // Update controls
     if (this.controls) {
       this.controls.update();
     }
 
-    // Update time
     this.time += this.animationSpeed;
 
-    // Update each cube's position
     this.cubes.forEach((cube, index) => {
-      const row = Math.floor(index / 3);
-      const col = index % 3;
+      const row = Math.floor(index / this.gridSize);
+      const col = index % this.gridSize;
 
-      // Calculate phase based on position
       const phase = (row + col) * this.phaseOffset;
-
-      // Calculate progress (0 to 1) with phase offset
       let progress =
         ((this.time * 100 + phase) % this.duration) / this.duration;
 
-      // Create up and down motion by modifying progress
       if (progress > 0.5) {
-        progress = 1 - (progress - 0.5) * 2; // Down motion
+        progress = 1 - (progress - 0.5) * 2;
       } else {
-        progress = progress * 2; // Up motion
+        progress = progress * 2;
       }
 
-      // Apply easeOutBack to the progress
       const easedProgress = this.easeOutBack(progress);
-
-      // Calculate y position
       const y = cube.initialY + this.amplitude * easedProgress;
-
-      // Set new position
       cube.position.y = y;
     });
   }
@@ -405,5 +423,55 @@ export default class SoftLightScene {
     context.fillRect(0, 0, 2, 2);
 
     return canvas;
+  }
+
+  setupGUI() {
+    this.gui = new dat.GUI();
+
+    // Material folder
+    const materialFolder = this.gui.addFolder("Material");
+    materialFolder
+      .addColor(this.params, "color")
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "transmission", 0, 1)
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "opacity", 0, 1)
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "metalness", 0, 1)
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "roughness", 0, 1)
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "ior", 1, 2.333)
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "thickness", 0, 5)
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "specularIntensity", 0, 1)
+      .onChange(() => this.updateMaterials());
+    materialFolder
+      .add(this.params, "envMapIntensity", 0, 3)
+      .onChange(() => this.updateMaterials());
+    materialFolder.open();
+  }
+
+  updateMaterials() {
+    // Update all cubes' materials
+    this.cubes.forEach((cube) => {
+      cube.material.color.set(this.params.color);
+      cube.material.transmission = this.params.transmission;
+      cube.material.opacity = this.params.opacity;
+      cube.material.metalness = this.params.metalness;
+      cube.material.roughness = this.params.roughness;
+      cube.material.ior = this.params.ior;
+      cube.material.thickness = this.params.thickness;
+      cube.material.specularIntensity = this.params.specularIntensity;
+      cube.material.envMapIntensity = this.params.envMapIntensity;
+    });
   }
 }
