@@ -27,9 +27,12 @@ export default class SoftLightScene {
     // Add animation properties
     this.time = 0;
     this.animationSpeed = 0.05;
-    this.amplitude = 2; // Height of the motion
-    this.frequency = 0.3; // Speed of the wave
-    this.phaseOffset = 2; // Offset between cubes
+    this.amplitude = 4; // Height of the motion
+    this.frequency = 0.2; // Speed of the wave
+    this.phaseOffset = 1.5; // Offset between cubes
+
+    // Track cube states
+    this.cubeStates = new Array(9).fill(false); // Track if each cube has played sound
   }
 
   setupRenderer() {
@@ -107,9 +110,10 @@ export default class SoftLightScene {
   }
 
   createFloor() {
-    const floorSize = 50;
+    const floorSize = 51;
     const holeSize = 3.2; // Slightly larger than cube size
     const spacing = 8; // Same spacing as cubes
+    const holeDepth = 3; // Depth of the extruded holes
 
     // Create floor shape with holes
     const shape = new THREE.Shape();
@@ -165,8 +169,20 @@ export default class SoftLightScene {
     // Add holes to shape
     shape.holes = holes;
 
-    // Create geometry from shape
-    const geometry = new THREE.ShapeGeometry(shape);
+    // Extrusion settings
+    const extrudeSettings = {
+      steps: 1,
+      depth: holeDepth,
+      bevelEnabled: true,
+      bevelThickness: 0.2,
+      bevelSize: 0.2,
+      bevelOffset: 0,
+      bevelSegments: 10,
+    };
+
+    // Create geometry with extrusion
+    const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+
     const material = new THREE.MeshStandardMaterial({
       color: "#f0e6e6",
       roughness: 0.8,
@@ -176,18 +192,23 @@ export default class SoftLightScene {
 
     this.floor = new THREE.Mesh(geometry, material);
     this.floor.rotation.x = -Math.PI / 2;
+    this.floor.position.y = -4; // Slight offset to prevent z-fighting
     this.floor.receiveShadow = true;
     this.scene.add(this.floor);
 
-    // Optional: Add inner edges for holes
-    const edgeGeometry = new THREE.EdgesGeometry(geometry);
-    const edgeMaterial = new THREE.LineBasicMaterial({
+    // Create inner walls for holes (optional)
+    const innerMaterial = new THREE.MeshStandardMaterial({
       color: "#e0d6d6",
-      transparent: true,
-      opacity: 0,
+      roughness: 0.9,
+      metalness: 0.1,
+      side: THREE.BackSide,
     });
-    const edges = new THREE.LineSegments(edgeGeometry, edgeMaterial);
-    this.floor.add(edges);
+
+    const innerFloor = new THREE.Mesh(geometry, innerMaterial);
+    innerFloor.rotation.x = -Math.PI / 2;
+    innerFloor.position.y = -4;
+    innerFloor.receiveShadow = true;
+    this.scene.add(innerFloor);
   }
 
   createCubes() {
@@ -294,11 +315,22 @@ export default class SoftLightScene {
       // Calculate phase based on position
       const phase = (row + col) * this.phaseOffset;
 
+      // Calculate sine value for current position
+      const sineValue = Math.sin(
+        this.time * this.frequency * Math.PI * 2 + phase
+      );
+
       // Calculate y position using sine wave
-      const y =
-        cube.initialY +
-        this.amplitude *
-          Math.sin(this.time * this.frequency * Math.PI * 2 + phase);
+      const y = cube.initialY + this.amplitude * sineValue;
+
+      //   // Check if cube is at peak and hasn't played sound yet
+      //   if (sineValue > 0.99 && !this.cubeStates[index]) {
+      //     this.cubeStates[index] = true; // Mark sound as played
+      //   }
+      //   // Reset state when cube is no longer at peak
+      //   else if (sineValue < 0.99) {
+      //     this.cubeStates[index] = false;
+      //   }
 
       // Set new position
       cube.position.y = y;
