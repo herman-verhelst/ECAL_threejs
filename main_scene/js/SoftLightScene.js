@@ -7,6 +7,7 @@ export default class SoftLightScene {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#575656");
     this.cubeSize = 4;
+    this.cubeSpacing = Math.max(this.cubeSize + 0.4, 8);
     this.gridSize = 3;
 
     this.setupRenderer();
@@ -29,7 +30,7 @@ export default class SoftLightScene {
     // Update animation properties
     this.time = 0;
     this.animationSpeed = 0.005; // Reduced for smoother motion
-    this.amplitude = 4;
+    this.amplitude = this.cubeSize;
     this.duration = 80; // Duration of one complete cycle
     this.phaseOffset = 20; // Offset between cubes in frames
 
@@ -112,9 +113,9 @@ export default class SoftLightScene {
   }
 
   createFloor() {
-    const floorSize = 51;
+    const floorSize = 52;
     const holeSize = this.cubeSize + 0.4; // Slightly larger than cube size
-    const spacing = 8; // Same spacing as cubes
+    const spacing = this.cubeSpacing; // Same spacing as cubes
     const holeDepth = 3; // Depth of the extruded holes
 
     // Create floor shape with holes
@@ -229,7 +230,7 @@ export default class SoftLightScene {
     ];
 
     const cubeSize = this.cubeSize;
-    const spacing = 8;
+    const spacing = this.cubeSpacing;
 
     // Create a group for all cubes
     this.cubesGroup = new THREE.Group();
