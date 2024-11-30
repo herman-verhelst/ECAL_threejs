@@ -1,14 +1,13 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
-import * as dat from "dat.gui";
+import Cube from "./Cube.js";
+import GuiControls from "./GuiControls.js";
 
 export default class SoftLightScene {
   constructor() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#575656");
-    this.cubeSize = 4; // 1.1;
+    this.cubeSize = 4; //1.1;
     this.cubeSpacing = Math.max(this.cubeSize + 0.4, 8);
     this.gridSize = 3; //16 pour le smiley
 
@@ -70,7 +69,11 @@ export default class SoftLightScene {
     // Track cube states
     // this.cubeStates = new Array(9).fill(false); // Track if each cube has played sound
 
-    this.setupGUI();
+    // Initialize GUI controls
+    this.guiControls = new GuiControls(this.params, () =>
+      this.updateMaterials()
+    );
+
     fetch("json/smiley.json")
       .then((response) => response.json())
       .then((matrix) => {
@@ -261,53 +264,6 @@ export default class SoftLightScene {
   }
 
   createCubes() {
-    /****************** */
-    const texture = new THREE.CanvasTexture(this.generateTexture());
-    texture.magFilter = THREE.NearestFilter;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.repeat.set(1, 3.5);
-    const hdrEquirect = new RGBELoader()
-      .setPath("textures/equirectangular/")
-      .load("royal_esplanade_1k.hdr", function () {
-        hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
-
-        // init();
-        // render();
-      });
-    // const params = {
-    //   color: 0xffffff,
-    //   transmission: 1,
-    //   opacity: 1,
-    //   metalness: 0,
-    //   roughness: 0,
-    //   ior: 1.5,
-    //   thickness: 0.01,
-    //   specularIntensity: 1,
-    //   specularColor: 0xffffff,
-    //   envMapIntensity: 1,
-    //   lightIntensity: 1,
-    //   exposure: 1,
-    // };
-    const params = this.params;
-    this.material2 = new THREE.MeshPhysicalMaterial({
-      color: params.color,
-      metalness: params.metalness,
-      roughness: params.roughness,
-      ior: params.ior,
-      alphaMap: texture,
-      envMap: hdrEquirect,
-      envMapIntensity: params.envMapIntensity,
-      transmission: params.transmission,
-      specularIntensity: params.specularIntensity,
-      specularColor: params.specularColor,
-      opacity: params.opacity,
-      side: false,
-      transparent: true,
-      shadowSide: THREE.DoubleSide,
-      depthWrite: false,
-    });
-    /****************** */
     this.pastelColors = [
       "#FFB5E8", // pink
       "#B5DEFF", // blue
@@ -330,42 +286,24 @@ export default class SoftLightScene {
     // Create and position cubes relative to group center
     for (let i = 0; i < this.gridSize; i++) {
       for (let j = 0; j < this.gridSize; j++) {
-        const geometry = new RoundedBoxGeometry(
-          cubeSize,
-          cubeSize * Math.random() + cubeSize,
-          cubeSize,
-          6,
-          0.4
-        );
+        // Add cube parameters to this.params
+        this.params = {
+          ...this.params,
+          cubeSize: cubeSize,
+          spacing: spacing,
+          gridSize: this.gridSize,
+          pastelColors: this.pastelColors,
+          i: i,
+          j: j,
+        };
 
-        const initialMaterial = new THREE.MeshStandardMaterial({
-          color:
-            this.pastelColors[
-              (i * this.gridSize + j) % this.pastelColors.length
-            ],
-          roughness: 0.6,
-          metalness: 0.1,
-        });
-
-        const cube = new THREE.Mesh(geometry, initialMaterial);
-
-        // Calculate center offset based on gridSize
-        const centerOffset = ((this.gridSize - 1) * spacing) / 2;
-        cube.position.x = j * spacing - centerOffset;
-        cube.position.z = i * spacing - centerOffset;
-        cube.position.y = cubeSize - 4;
-
-        cube.castShadow = true;
-        cube.receiveShadow = true;
-
-        // Store initial Y position
-        cube.initialY = cube.position.y;
+        const cube = new Cube(this.params);
 
         // Store cube reference
         this.cubes.push(cube);
 
         // Add cube to group
-        this.cubesGroup.add(cube);
+        this.cubesGroup.add(cube.mesh);
       }
     }
 
@@ -409,11 +347,11 @@ export default class SoftLightScene {
 
         const easedProgress = this.easeOutBack(progress);
         const y = cube.initialY + this.amplitude * easedProgress;
-        cube.position.y = y;
+        cube.positionY = y;
       });
     } else {
       this.cubes.forEach((cube) => {
-        cube.position.y = cube.initialY;
+        cube.positionY = cube.initialY;
       });
     }
   }
@@ -439,89 +377,9 @@ export default class SoftLightScene {
     return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
   }
 
-  generateTexture() {
-    const canvas = document.createElement("canvas");
-    canvas.width = 2;
-    canvas.height = 2;
-
-    const context = canvas.getContext("2d");
-    context.fillStyle = "white";
-    context.fillRect(0, 0, 2, 2);
-
-    return canvas;
-  }
-
-  setupGUI() {
-    this.gui = new dat.GUI();
-
-    // Material type selector
-    const materialTypeFolder = this.gui.addFolder("Material Type");
-    materialTypeFolder
-      .add(this.params, "transparentMaterial")
-      .name("Use Transparent Material")
-      .onChange(() => this.updateMaterials());
-    materialTypeFolder.open();
-
-    // Transparent material properties
-    const transparentMaterialFolder = this.gui.addFolder(
-      "Transparent Material Properties"
-    );
-    transparentMaterialFolder
-      .addColor(this.params, "color")
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "transmission", 0, 1)
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "opacity", 0, 1)
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "metalness", 0, 1)
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "roughness", 0, 1)
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "ior", 1, 2.333)
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "thickness", 0, 5)
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "specularIntensity", 0, 1)
-      .onChange(() => this.updateMaterials());
-    transparentMaterialFolder
-      .add(this.params, "envMapIntensity", 0, 3)
-      .onChange(() => this.updateMaterials());
-
-    // Add Animation Control folder
-    const animationFolder = this.gui.addFolder("Animation Control");
-    animationFolder.add(this.params, "isAnimating").name("Animation On/Off");
-    animationFolder.open();
-  }
-
   updateMaterials() {
     this.cubes.forEach((cube, index) => {
-      if (this.params.transparentMaterial) {
-        // Use transparent material (material2)
-        cube.material = this.material2;
-        cube.material.color.set(this.params.color);
-        cube.material.transmission = this.params.transmission;
-        cube.material.opacity = this.params.opacity;
-        cube.material.metalness = this.params.metalness;
-        cube.material.roughness = this.params.roughness;
-        cube.material.ior = this.params.ior;
-        cube.material.thickness = this.params.thickness;
-        cube.material.specularIntensity = this.params.specularIntensity;
-        cube.material.envMapIntensity = this.params.envMapIntensity;
-      } else {
-        // Use standard material with original pastel colors
-        cube.material = new THREE.MeshStandardMaterial({
-          color: this.pastelColors[index % this.pastelColors.length],
-          roughness: 0.6,
-          metalness: 0.1,
-        });
-      }
+      cube.updateMaterial(this.params, index);
     });
   }
 
@@ -563,5 +421,12 @@ export default class SoftLightScene {
         cube.castShadow = false;
       }
     });
+  }
+
+  cleanup() {
+    // ... other cleanup code ...
+    if (this.guiControls) {
+      this.guiControls.destroy();
+    }
   }
 }
