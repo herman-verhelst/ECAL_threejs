@@ -8,9 +8,9 @@ export default class SoftLightScene {
   constructor() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#575656");
-    this.cubeSize = 4;
+    this.cubeSize = 4; // 1.1;
     this.cubeSpacing = Math.max(this.cubeSize + 0.4, 8);
-    this.gridSize = 3;
+    this.gridSize = 3; //16 pour le smiley
 
     // Add GUI parameters
     this.params = {
@@ -40,7 +40,7 @@ export default class SoftLightScene {
       transparentMaterial: false,
 
       // Add animation control
-      isAnimating: true, // New parameter to control animation state
+      isAnimating: false, // New parameter to control animation state
     };
 
     this.setupRenderer();
@@ -68,9 +68,17 @@ export default class SoftLightScene {
     this.phaseOffset = 20; // Offset between cubes in frames
 
     // Track cube states
-    this.cubeStates = new Array(9).fill(false); // Track if each cube has played sound
+    // this.cubeStates = new Array(9).fill(false); // Track if each cube has played sound
 
     this.setupGUI();
+    fetch("json/smiley.json")
+      .then((response) => response.json())
+      .then((matrix) => {
+        this.setMaterialsByMatrix(matrix);
+      })
+      .catch((error) => {
+        console.error("Error loading smiley.json:", error);
+      });
   }
 
   setupRenderer() {
@@ -345,7 +353,7 @@ export default class SoftLightScene {
         const centerOffset = ((this.gridSize - 1) * spacing) / 2;
         cube.position.x = j * spacing - centerOffset;
         cube.position.z = i * spacing - centerOffset;
-        cube.position.y = -1.5 * cubeSize;
+        cube.position.y = cubeSize - 4;
 
         cube.castShadow = true;
         cube.receiveShadow = true;
@@ -402,6 +410,10 @@ export default class SoftLightScene {
         const easedProgress = this.easeOutBack(progress);
         const y = cube.initialY + this.amplitude * easedProgress;
         cube.position.y = y;
+      });
+    } else {
+      this.cubes.forEach((cube) => {
+        cube.position.y = cube.initialY;
       });
     }
   }
@@ -509,6 +521,46 @@ export default class SoftLightScene {
           roughness: 0.6,
           metalness: 0.1,
         });
+      }
+    });
+  }
+
+  setMaterialsByMatrix(matrix) {
+    // Validate matrix dimensions
+    if (
+      !matrix ||
+      matrix.length !== this.gridSize ||
+      matrix[0].length !== this.gridSize
+    ) {
+      console.error("Matrix dimensions must match gridSize:", this.gridSize);
+      return;
+    }
+
+    this.cubes.forEach((cube, index) => {
+      const row = Math.floor(index / this.gridSize);
+      const col = index % this.gridSize;
+
+      if (matrix[row][col] === 1) {
+        // Use standard material with original pastel colors
+        cube.material = new THREE.MeshStandardMaterial({
+          //   color: this.pastelColors[index % this.pastelColors.length],
+          color: 0x000000,
+          roughness: 0.6,
+          metalness: 0.1,
+        });
+      } else if (matrix[row][col] === 0) {
+        // Use transparent material (material2)
+        cube.material = this.material2.clone(); // Clone to avoid sharing materials
+        cube.material.color.set(this.params.color);
+        cube.material.transmission = this.params.transmission;
+        cube.material.opacity = this.params.opacity;
+        cube.material.metalness = this.params.metalness;
+        cube.material.roughness = this.params.roughness;
+        cube.material.ior = this.params.ior;
+        cube.material.thickness = this.params.thickness;
+        cube.material.specularIntensity = this.params.specularIntensity;
+        cube.material.envMapIntensity = this.params.envMapIntensity;
+        cube.castShadow = false;
       }
     });
   }
