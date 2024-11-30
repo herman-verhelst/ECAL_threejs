@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "dat.gui": "^0.7.9",
+    "firebase": "^11.0.2",
     "three": "^0.170.0"
   }
 }

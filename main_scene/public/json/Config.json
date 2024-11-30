@@ -1,0 +1,33 @@
+{
+  "UID": "1234567890",
+  "OTHERS": [
+    {
+      "name": "andreas-steve",
+      "UID": "1234"
+    },
+    {
+      "name": "laurine-nyria",
+      "UID": "1234"
+    },
+    {
+      "name": "teo-brikeld",
+      "UID": "1234"
+    },
+    {
+      "name": "teo-brikeld",
+      "UID": "1234"
+    },
+    {
+      "name": "shana-yann",
+      "UID": "1234"
+    },
+    {
+      "name": "daniel-dalia",
+      "UID": "1234"
+    },
+    {
+      "name": "verhelst-jonathan",
+      "UID": "1234"
+    }
+  ]
+}

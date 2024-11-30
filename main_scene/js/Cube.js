@@ -1,152 +1,130 @@
 import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
-import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
+import Materials from "./Materials.js";
+import FirebaseConfig from "./FirebaseConfig.js";
+
+/**
+ * Classe représentant un cube dans la scène
+ * Gère la création, l'animation et les transitions du cube
+ */
 export default class Cube {
+  // Valeurs par défaut pour les propriétés du cube
+  static DEFAULTS = {
+    holeDepth: 3, // Profondeur du trou
+    floorY: -4, // Position Y du sol
+    transitionSpeed: 0.03, // Vitesse de transition
+  };
+
+  /**
+   * Crée une instance de Cube
+   * @param {Object} params - Paramètres de configuration du cube
+   */
   constructor(params) {
-    console.log(params);
-    // Define pastel colors for cubes
-    this.pastelColors = [
-      "#FFB5E8", // pink
-      "#B5DEFF", // blue
-      "#E7FFAC", // green
-      "#FFC9DE", // light pink
-      "#97E5D7", // mint
-      "#FFD4B5", // peach
-      "#D4B5FF", // purple
-      "#B5ECD4", // seafoam
-      "#FFE5B5", // yellow
-    ];
-    /****************** */
-    const texture = new THREE.CanvasTexture(this.generateTexture());
-    texture.magFilter = THREE.NearestFilter;
-    texture.wrapT = THREE.RepeatWrapping;
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.repeat.set(1, 3.5);
-    const hdrEquirect = new RGBELoader()
-      .setPath("textures/equirectangular/")
-      .load("royal_esplanade_1k.hdr", function () {
-        hdrEquirect.mapping = THREE.EquirectangularReflectionMapping;
-      });
-    this.material2 = new THREE.MeshPhysicalMaterial({
-      color: params.color,
-      metalness: params.metalness,
-      roughness: params.roughness,
-      ior: params.ior,
-      alphaMap: texture,
-      envMap: hdrEquirect,
-      envMapIntensity: params.envMapIntensity,
-      transmission: params.transmission,
-      specularIntensity: params.specularIntensity,
-      specularColor: params.specularColor,
-      opacity: params.opacity,
-      side: false,
-      transparent: true,
-      shadowSide: THREE.DoubleSide,
-      depthWrite: false,
-    });
-    /******************************************************** */
+    this.params = params;
+    this.UID = params.UID;
 
-    const geometry = new RoundedBoxGeometry(
-      params.cubeSize,
-      params.cubeSize * Math.random() + params.cubeSize,
-      params.cubeSize,
-      6,
-      0.4
-    );
+    // Création des matériaux
+    const colorIndex = this.params.i * this.params.gridSize + this.params.j;
+    this.materials = new Materials(this.params);
+    this.materials.createStandardMaterial(colorIndex);
 
-    this.initialMaterial = new THREE.MeshStandardMaterial({
-      color:
-        this.pastelColors[
-          (params.i * params.gridSize + params.j) % this.pastelColors.length
-        ],
-      roughness: 0.6,
-      metalness: 0.1,
-    });
-    // console.log(initialMaterial);
-    this.mesh = new THREE.Mesh(geometry, this.initialMaterial);
+    this.createMesh();
+    this.setupPositioning();
+    this.setupAnimationState();
+  }
 
-    // Calculate center offset based on gridSize
-    const centerOffset = ((params.gridSize - 1) * params.spacing) / 2;
-    this.mesh.position.x = params.j * params.spacing - centerOffset;
-    this.mesh.position.z = params.i * params.spacing - centerOffset;
+  /**
+   * Crée le mesh du cube avec une géométrie arrondie
+   */
+  createMesh() {
+    // Use shared geometry if provided, otherwise create new one
+    const geometry =
+      this.params.geometry ||
+      new RoundedBoxGeometry(
+        this.params.cubeSize,
+        this.params.cubeSize * Math.random() + this.params.cubeSize,
+        this.params.cubeSize,
+        6,
+        0.4
+      );
 
-    // Set initial Y position at the bottom of the hole
-    const holeDepth = 3; // Same as in Floor class
-    const floorY = -4; // Same as in Floor class
-    this.mesh.position.y = floorY + holeDepth;
-
+    this.mesh = new THREE.Mesh(geometry, this.materials.getStandardMaterial());
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;
+  }
 
-    // Store initial Y position
+  /**
+   * Configure la position initiale du cube dans la grille
+   */
+  setupPositioning() {
+    const centerOffset = ((this.params.gridSize - 1) * this.params.spacing) / 2;
+
+    this.mesh.position.x = this.params.j * this.params.spacing - centerOffset;
+    this.mesh.position.z = this.params.i * this.params.spacing - centerOffset;
+    this.mesh.position.y = Cube.DEFAULTS.floorY + Cube.DEFAULTS.holeDepth;
+
     this.initialY = this.mesh.position.y;
-    this.floorY = -4; // Floor level
-    this.isPressed = false;
+    this.floorY = Cube.DEFAULTS.floorY;
+  }
 
-    // Animation parameters for click motion
+  /**
+   * Initialise les états d'animation du cube
+   */
+  setupAnimationState() {
+    this.isPressed = false;
     this.isTransitioning = false;
     this.transitionProgress = 0;
-    this.transitionSpeed = 0.03; // Adjusted for better feel
+    this.transitionSpeed = Cube.DEFAULTS.transitionSpeed;
     this.currentY = this.initialY;
     this.targetY = this.initialY;
   }
 
-  set positionY(y) {
-    this.mesh.position.y = y;
-  }
-  set positionX(x) {
-    this.mesh.position.x = x;
-  }
-  set positionZ(z) {
-    this.mesh.position.z = z;
-  }
-
+  /**
+   * Met à jour le matériau du cube
+   * @param {Object} params - Nouveaux paramètres de matériau
+   * @param {number} index - Index du cube dans la grille
+   */
   updateMaterial(params, index) {
     if (params.transparentMaterial) {
-      // Use transparent material (material2)
-      this.mesh.material = this.material2;
-      this.mesh.material.color.set(params.color);
-      this.mesh.material.transmission = params.transmission;
-      this.mesh.material.opacity = params.opacity;
-      this.mesh.material.metalness = params.metalness;
-      this.mesh.material.roughness = params.roughness;
-      this.mesh.material.ior = params.ior;
-      this.mesh.material.thickness = params.thickness;
-      this.mesh.material.specularIntensity = params.specularIntensity;
-      this.mesh.material.envMapIntensity = params.envMapIntensity;
+      this.materials.updateTransparentMaterial(params);
+      this.mesh.material = this.materials.getTransparentMaterial();
     } else {
-      // Use standard material with original pastel colors
-      this.mesh.material = new THREE.MeshStandardMaterial({
-        color: this.pastelColors[index % this.pastelColors.length],
-        roughness: 0.6,
-        metalness: 0.1,
-      });
+      this.materials.createStandardMaterial(index);
+      this.mesh.material = this.materials.getStandardMaterial();
     }
   }
 
-  generateTexture() {
-    const canvas = document.createElement("canvas");
-    canvas.width = 2;
-    canvas.height = 2;
-
-    const context = canvas.getContext("2d");
-    context.fillStyle = "white";
-    context.fillRect(0, 0, 2, 2);
-
-    return canvas;
+  /**
+   * Met à jour le matériau en fonction de la valeur de la matrice
+   * @param {number} value - Valeur de la matrice (0 ou 1)
+   */
+  setMaterialByMatrix(value) {
+    // setup material by value
+    if (value === 1) {
+      this.mesh.material = this.materials.getBlackMaterial();
+    } else {
+      this.mesh.material = this.materials.getTransparentMaterial();
+    }
   }
 
+  /**
+   * Bascule l'état pressé/relâché du cube
+   */
   togglePress() {
     this.isPressed = !this.isPressed;
-    if (this.isPressed) {
-      //   this.mesh.material = this.material2;
-      this.startTransition(this.floorY);
-    } else {
-      //   this.mesh.material = this.initialMaterial;
-      this.startTransition(this.initialY);
-    }
+    this.startTransition(this.isPressed ? this.floorY : this.initialY);
+
+    FirebaseConfig.sendData("connections/" + FirebaseConfig.UID, {
+      target: this.UID,
+      date: Date.now(),
+      value: [],
+    });
   }
 
+  /**
+   * Démarre une transition vers une nouvelle position Y
+   * @param {number} targetY - Position Y cible
+   */
   startTransition(targetY) {
     this.isTransitioning = true;
     this.transitionProgress = 0;
@@ -154,35 +132,54 @@ export default class Cube {
     this.targetY = targetY;
   }
 
+  /**
+   * Met à jour la position du cube pendant la transition
+   */
   update() {
-    if (this.isTransitioning) {
-      // Linear progress
-      this.transitionProgress += this.transitionSpeed;
-      this.transitionProgress = Math.min(this.transitionProgress, 1);
-      // Apply easing to the progress
-      const eased = this.easeInOutCubic(this.transitionProgress);
-      // Simple linear interpolation with eased progress
-      const newY = this.currentY + (this.targetY - this.currentY) * eased;
-      this.mesh.position.y = newY;
-      if (this.transitionProgress >= 1) {
-        this.isTransitioning = false;
-        this.mesh.position.y = this.targetY;
-      }
+    if (!this.isTransitioning) return;
+
+    this.transitionProgress = Math.min(
+      this.transitionProgress + this.transitionSpeed,
+      1
+    );
+
+    const eased = this.easeInOutCubic(this.transitionProgress);
+    const newY = this.currentY + (this.targetY - this.currentY) * eased;
+    this.mesh.position.y = newY;
+
+    if (this.transitionProgress >= 1) {
+      this.isTransitioning = false;
+      this.mesh.position.y = this.targetY;
     }
   }
 
   /**
-   * Cubic easing in both directions
+   * Fonction d'interpolation cubique pour les transitions
+   * @param {number} x - Valeur à interpoler entre 0 et 1
+   * @returns {number} Valeur interpolée
    */
   easeInOutCubic(x) {
     return x;
   }
 
+  // Getters d'état
   get isDown() {
     return this.isPressed;
   }
-
   get isMoving() {
     return this.isTransitioning;
+  }
+
+  // Setters de position
+  set positionY(y) {
+    this.mesh.position.y = y;
+  }
+
+  set positionX(x) {
+    this.mesh.position.x = x;
+  }
+
+  set positionZ(z) {
+    this.mesh.position.z = z;
   }
 }

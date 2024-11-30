@@ -5,8 +5,10 @@ import GuiControls from "./GuiControls.js";
 import Lights from "./Lights.js";
 import CubeAnimator from "./CubeAnimator.js";
 import Floor from "./Floor.js";
+import FloorSimple from "./FloorSimple.js";
 import Interaction from "./Interaction.js";
-
+import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
+import FirebaseConfig from "./FirebaseConfig.js";
 /**
  * Classe principale qui gère la scène 3D
  * Cette classe coordonne tous les éléments : cubes, lumières, animations, etc.
@@ -16,6 +18,15 @@ export default class SoftLightScene {
    * Initialise la scène avec les paramètres par défaut
    */
   constructor() {
+    this.init();
+  }
+
+  async init() {
+    // Charger la configuration
+    // Sauvegarder son identifiant unique de la config
+    // Charger les identifiants des autres personnes pour chaque cube
+    await this.loadConfig();
+
     // Configuration de base de la scène
     this.initializeBasicSettings();
 
@@ -35,17 +46,28 @@ export default class SoftLightScene {
     // Configuration des écouteurs d'événements
     this.setupEventListeners();
 
+    // Initialisation de l'écouteur Firebase
+    this.firstCall = false;
+    FirebaseConfig.listenToData("connections", (data) => {
+      if (!this.firstCall) {
+        this.firstCall = true;
+        return;
+      }
+      console.log(data);
+      // ------> MISE À JOUR DES FORMES DEPUIS L'ENTRÉE FIREBASE
+    });
+
     // Initialisation des contrôles GUI
     this.setupGUI();
-
-    // Démarrage de la boucle de rendu
-    this.render();
 
     // Chargement du motif initial de la matrice
     this.loadMatrixPattern();
 
-    // Setup interaction after cubes are created
+    // Configuration de l'interaction après la création des cubes
     this.setupInteraction();
+
+    // Démarrage de la boucle de rendu
+    this.render();
   }
 
   /**
@@ -167,7 +189,9 @@ export default class SoftLightScene {
     fetch("json/smiley.json")
       .then((response) => response.json())
       .then((matrix) => this.setMaterialsByMatrix(matrix))
-      .catch((error) => console.error("Error loading smiley.json:", error));
+      .catch((error) =>
+        console.error("Erreur lors du chargement de smiley.json:", error)
+      );
   }
 
   /**
@@ -180,6 +204,10 @@ export default class SoftLightScene {
       cubeSpacing: this.cubeSpacing,
     });
     this.floor.addToScene(this.scene);
+
+    // Mise à jour de l'arrière-plan de la scène pour correspondre aux couleurs du sol (assombries)
+    const colors = this.floor.materials.getActiveColors();
+    this.scene.background = new THREE.Color(colors.background);
   }
 
   /**
@@ -189,19 +217,28 @@ export default class SoftLightScene {
     this.cubesGroup = new THREE.Group();
     this.cubes = [];
 
-    const spacing = this.cubeSpacing;
-    const cubeSize = this.cubeSize;
+    // Création de la géométrie partagée
+    const geometry = new RoundedBoxGeometry(
+      this.cubeSize,
+      this.cubeSize,
+      this.cubeSize,
+      6,
+      0.4
+    );
 
     for (let i = 0; i < this.gridSize; i++) {
       for (let j = 0; j < this.gridSize; j++) {
-        // Ajoute les paramètres du cube à this.params
         this.params = {
           ...this.params,
-          cubeSize: cubeSize,
-          spacing: spacing,
+          cubeSize: this.cubeSize,
+          spacing: this.cubeSpacing,
           gridSize: this.gridSize,
           i: i,
           j: j,
+          geometry: geometry, // Passage de la géométrie partagée
+          UID: this.otherUIDs[i * this.gridSize + j]
+            ? this.otherUIDs[i * this.gridSize + j].name
+            : null,
         };
 
         const cube = new Cube(this.params);
@@ -228,7 +265,7 @@ export default class SoftLightScene {
       this.controls.update();
     }
 
-    // Update cube transitions
+    // Mise à jour des transitions des cubes
     this.cubes.forEach((cube) => cube.update());
 
     // Met à jour l'état de l'animation en fonction du contrôle GUI
@@ -237,7 +274,7 @@ export default class SoftLightScene {
     // Met à jour tous les cubes
     this.animator.update(this.cubes, this.gridSize);
 
-    // Update interactions
+    // Mise à jour des interactions
     if (this.interaction) {
       this.interaction.update();
     }
@@ -273,6 +310,7 @@ export default class SoftLightScene {
    */
   updateMaterials() {
     this.cubes.forEach((cube, index) => {
+      if (this.params.isAnimating) return;
       cube.updateMaterial(this.params, index);
     });
 
@@ -291,14 +329,17 @@ export default class SoftLightScene {
       matrix.length !== this.gridSize ||
       matrix[0].length !== this.gridSize
     ) {
-      console.error("Matrix dimensions must match gridSize:", this.gridSize);
+      console.error(
+        "Les dimensions de la matrice doivent correspondre à gridSize:",
+        this.gridSize
+      );
       return;
     }
-
+    // console.log(matrix);
     this.cubes.forEach((cube, index) => {
-      const row = Math.floor(index / this.gridSize);
-      const col = index % this.gridSize;
-      cube.setMaterialByMatrix(matrix[row][col]);
+      const x = index % this.gridSize;
+      const y = Math.floor(index / this.gridSize);
+      cube.setMaterialByMatrix(matrix[y][x]);
     });
   }
 
@@ -319,5 +360,29 @@ export default class SoftLightScene {
       this.interaction.dispose();
     }
     window.removeEventListener("resize", this.onResize);
+  }
+
+  /**
+   * Charge la configuration depuis le fichier JSON
+   */
+  loadConfig() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await fetch("json/Config.json");
+        const config = await response.json();
+
+        // Sauvegarder l'identifiant unique
+        FirebaseConfig.sourceUID = config.UID;
+
+        // Sauvegarder les identifiants des autres personnes
+        this.otherUIDs = config.OTHERS.map((other) => ({
+          name: other.name,
+          UID: other.UID,
+        }));
+      } catch (error) {
+        console.error("Erreur lors du chargement de la configuration:", error);
+      }
+      resolve();
+    });
   }
 }

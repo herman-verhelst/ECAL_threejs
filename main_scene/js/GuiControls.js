@@ -1,6 +1,15 @@
 import * as dat from "dat.gui";
 
+/**
+ * Classe gérant les contrôles GUI de l'application
+ * Permet de modifier les paramètres des matériaux et de l'animation en temps réel
+ */
 export default class GuiControls {
+  /**
+   * Crée une instance des contrôles GUI
+   * @param {Object} params - Paramètres à contrôler
+   * @param {Function} updateCallback - Fonction appelée lors des changements
+   */
   constructor(params, updateCallback) {
     this.params = params;
     this.updateCallback = updateCallback;
@@ -8,8 +17,11 @@ export default class GuiControls {
     this.setupControls();
   }
 
+  /**
+   * Configure tous les contrôles de l'interface
+   */
   setupControls() {
-    // Material type selector
+    // Sélecteur du type de matériau
     const materialTypeFolder = this.gui.addFolder("Material Type");
     materialTypeFolder
       .add(this.params, "transparentMaterial")
@@ -17,7 +29,7 @@ export default class GuiControls {
       .onChange(() => this.updateCallback());
     materialTypeFolder.open();
 
-    // Transparent material properties
+    // Propriétés du matériau transparent
     const transparentMaterialFolder = this.gui.addFolder(
       "Transparent Material Properties"
     );
@@ -49,7 +61,7 @@ export default class GuiControls {
       .add(this.params, "envMapIntensity", 0, 3)
       .onChange(() => this.updateCallback());
 
-    // Wave Animation Controls
+    // Contrôles de l'animation de vague
     const animationFolder = this.gui.addFolder("Wave Animation");
     animationFolder
       .add(this.params, "isAnimating")
@@ -74,11 +86,18 @@ export default class GuiControls {
     animationFolder.open();
   }
 
+  /**
+   * Met à jour les paramètres et rafraîchit l'affichage GUI
+   * @param {Object} newParams - Nouveaux paramètres à appliquer
+   */
   updateParams(newParams) {
     Object.assign(this.params, newParams);
     this.gui.updateDisplay();
   }
 
+  /**
+   * Nettoie l'interface GUI
+   */
   destroy() {
     if (this.gui) {
       this.gui.destroy();

@@ -1,56 +1,71 @@
 import * as THREE from "three";
+import Materials from "./Materials.js";
 
 /**
  * Classe qui gère la création et la gestion du sol
+ * Permet de créer un sol avec des trous pour les cubes et des murs intérieurs
  */
 export default class Floor {
   /**
+   * Initialise une nouvelle instance de Floor
    * @param {Object} params - Paramètres de configuration du sol
-   * @param {number} params.gridSize - Taille de la grille
-   * @param {number} params.cubeSize - Taille des cubes
+   * @param {number} params.gridSize - Taille de la grille (nombre de cubes par côté)
+   * @param {number} params.cubeSize - Taille des cubes individuels
    * @param {number} params.cubeSpacing - Espacement entre les cubes
    */
   constructor(params) {
+    // Stocke les paramètres de configuration
     this.gridSize = params.gridSize;
     this.cubeSize = params.cubeSize;
     this.cubeSpacing = params.cubeSpacing;
 
-    this.floorSize = 52;
-    this.holeSize = this.cubeSize + 0.4;
-    this.holeDepth = 3;
+    // Définit les dimensions du sol et des trous
+    this.floorSize = 52; // Taille totale du sol
+    this.holeSize = this.cubeSize + 0.4; // Taille des trous légèrement plus grande que les cubes
+    this.holeDepth = 3; // Profondeur des trous
 
+    // Create materials instance
+    this.materials = new Materials(params);
+
+    // Crée le sol initial
     this.createFloor();
   }
 
   /**
-   * Crée la forme du sol avec les trous
+   * Crée la forme de base du sol avec les trous
+   * Utilise THREE.Shape pour définir le contour et les trous
    */
   createFloorShape() {
     const shape = new THREE.Shape();
+    // Dessine le contour carré du sol
     shape.moveTo(-this.floorSize / 2, -this.floorSize / 2);
     shape.lineTo(this.floorSize / 2, -this.floorSize / 2);
     shape.lineTo(this.floorSize / 2, this.floorSize / 2);
     shape.lineTo(-this.floorSize / 2, this.floorSize / 2);
     shape.lineTo(-this.floorSize / 2, -this.floorSize / 2);
 
+    // Ajoute les trous pour les cubes
     shape.holes = this.createHoles();
     return shape;
   }
 
   /**
-   * Crée les trous pour chaque position de cube
+   * Crée les trous pour chaque position de cube dans la grille
+   * Chaque trou est un rectangle arrondi
    */
   createHoles() {
     const holes = [];
     for (let i = 0; i < this.gridSize; i++) {
       for (let j = 0; j < this.gridSize; j++) {
         const holeShape = new THREE.Path();
+        // Calcule la position centrale de chaque trou
         const centerOffset = ((this.gridSize - 1) * this.cubeSpacing) / 2;
         const x = j * this.cubeSpacing - centerOffset - this.holeSize / 2;
         const y = i * this.cubeSpacing - centerOffset - this.holeSize / 2;
 
         // Crée un rectangle arrondi pour chaque trou
-        const radius = 0.4;
+        const radius = 0.4; // Rayon des coins arrondis
+        // Dessine le contour du trou avec des coins arrondis
         holeShape.moveTo(x + radius, y);
         holeShape.lineTo(x + this.holeSize - radius, y);
         holeShape.quadraticCurveTo(
@@ -84,9 +99,11 @@ export default class Floor {
 
   /**
    * Crée le sol complet avec les murs intérieurs
+   * Utilise ExtrudeGeometry pour donner de la profondeur à la forme
    */
   createFloor() {
     const shape = this.createFloorShape();
+    // Configuration de l'extrusion pour créer la profondeur et les bords biseautés
     const extrudeSettings = {
       steps: 1,
       depth: this.holeDepth,
@@ -99,35 +116,24 @@ export default class Floor {
 
     const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
 
-    // Crée le sol principal
-    const material = new THREE.MeshStandardMaterial({
-      color: "#f0e6e6",
-      roughness: 0.8,
-      metalness: 0.2,
-      side: THREE.DoubleSide,
-    });
-
-    this.floor = new THREE.Mesh(geometry, material);
-    this.floor.rotation.x = -Math.PI / 2;
-    this.floor.position.y = -4;
+    // Use materials from Materials class
+    this.floor = new THREE.Mesh(geometry, this.materials.getFloorMaterial());
+    this.floor.rotation.x = -Math.PI / 2; // Rotation pour l'orienter horizontalement
+    this.floor.position.y = -4; // Position verticale du sol
     this.floor.receiveShadow = true;
 
-    // Crée les murs intérieurs
-    const innerMaterial = new THREE.MeshStandardMaterial({
-      color: "#e0d6d6",
-      roughness: 0.9,
-      metalness: 0.1,
-      side: THREE.BackSide,
-    });
-
-    this.innerFloor = new THREE.Mesh(geometry, innerMaterial);
+    this.innerFloor = new THREE.Mesh(
+      geometry,
+      this.materials.getInnerFloorMaterial()
+    );
     this.innerFloor.rotation.x = -Math.PI / 2;
     this.innerFloor.position.y = -4;
     this.innerFloor.receiveShadow = true;
   }
 
   /**
-   * Ajoute le sol à la scène
+   * Ajoute le sol et les murs intérieurs à la scène
+   * @param {THREE.Scene} scene - La scène Three.js
    */
   addToScene(scene) {
     scene.add(this.floor);
@@ -135,7 +141,8 @@ export default class Floor {
   }
 
   /**
-   * Supprime le sol de la scène
+   * Supprime le sol et les murs intérieurs de la scène
+   * @param {THREE.Scene} scene - La scène Three.js
    */
   removeFromScene(scene) {
     scene.remove(this.floor);
@@ -143,10 +150,11 @@ export default class Floor {
   }
 
   /**
-   * Met à jour les couleurs du sol
+   * Met à jour les couleurs du sol et des murs intérieurs
+   * @param {string|THREE.Color} floorColor - Nouvelle couleur du sol
+   * @param {string|THREE.Color} innerWallColor - Nouvelle couleur des murs intérieurs
    */
   updateColors(floorColor, innerWallColor) {
-    this.floor.material.color.set(floorColor);
-    this.innerFloor.material.color.set(innerWallColor);
+    this.materials.updateFloorColors(floorColor, innerWallColor);
   }
 }
