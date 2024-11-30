@@ -49,40 +49,36 @@ export default class GuiControls {
       .add(this.params, "envMapIntensity", 0, 3)
       .onChange(() => this.updateCallback());
 
-    // Add Animation Control folder with more parameters
-    const animationFolder = this.gui.addFolder("Animation Control");
-    animationFolder.add(this.params, "isAnimating").name("Animation On/Off");
+    // Wave Animation Controls
+    const animationFolder = this.gui.addFolder("Wave Animation");
+    animationFolder
+      .add(this.params, "isAnimating")
+      .name("Animation On/Off")
+      .onChange(() => this.updateCallback());
     animationFolder
       .add(this.params, "animationSpeed", 0.001, 0.01)
-      .name("Speed")
+      .name("Wave Speed")
       .onChange(() => this.updateCallback());
     animationFolder
       .add(this.params, "amplitude", 0, 3)
-      .name("Height")
+      .name("Wave Height")
       .onChange(() => this.updateCallback());
     animationFolder
-      .add(this.params, "downwardOffset", 0, 5)
-      .name("Depth")
-      .onChange(() => this.updateCallback());
-    animationFolder
-      .add(this.params, "duration", 40, 200)
-      .name("Duration")
+      .add(this.params, "downwardOffset", 0, 3)
+      .name("Wave Depth")
       .onChange(() => this.updateCallback());
     animationFolder
       .add(this.params, "phaseOffset", 0, 50)
-      .name("Phase Offset")
+      .name("Wave Offset")
       .onChange(() => this.updateCallback());
     animationFolder.open();
   }
 
-  // Method to update parameters
   updateParams(newParams) {
     Object.assign(this.params, newParams);
-    // Optionally refresh GUI if needed
     this.gui.updateDisplay();
   }
 
-  // Method to destroy GUI
   destroy() {
     if (this.gui) {
       this.gui.destroy();

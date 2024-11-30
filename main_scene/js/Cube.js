@@ -82,6 +82,13 @@ export default class Cube {
     this.initialY = this.mesh.position.y;
     this.floorY = -4; // Floor level
     this.isPressed = false;
+
+    // Animation parameters for click motion
+    this.isTransitioning = false;
+    this.transitionProgress = 0;
+    this.transitionSpeed = 0.03; // Adjusted for better feel
+    this.currentY = this.initialY;
+    this.targetY = this.initialY;
   }
 
   set positionY(y) {
@@ -132,15 +139,50 @@ export default class Cube {
   togglePress() {
     this.isPressed = !this.isPressed;
     if (this.isPressed) {
-      this.mesh.material = this.material2;
-      this.mesh.position.y = this.floorY;
+      //   this.mesh.material = this.material2;
+      this.startTransition(this.floorY);
     } else {
-      this.mesh.material = this.initialMaterial;
-      this.mesh.position.y = this.initialY;
+      //   this.mesh.material = this.initialMaterial;
+      this.startTransition(this.initialY);
     }
+  }
+
+  startTransition(targetY) {
+    this.isTransitioning = true;
+    this.transitionProgress = 0;
+    this.currentY = this.mesh.position.y;
+    this.targetY = targetY;
+  }
+
+  update() {
+    if (this.isTransitioning) {
+      // Linear progress
+      this.transitionProgress += this.transitionSpeed;
+      this.transitionProgress = Math.min(this.transitionProgress, 1);
+      // Apply easing to the progress
+      const eased = this.easeInOutCubic(this.transitionProgress);
+      // Simple linear interpolation with eased progress
+      const newY = this.currentY + (this.targetY - this.currentY) * eased;
+      this.mesh.position.y = newY;
+      if (this.transitionProgress >= 1) {
+        this.isTransitioning = false;
+        this.mesh.position.y = this.targetY;
+      }
+    }
+  }
+
+  /**
+   * Cubic easing in both directions
+   */
+  easeInOutCubic(x) {
+    return x;
   }
 
   get isDown() {
     return this.isPressed;
+  }
+
+  get isMoving() {
+    return this.isTransitioning;
   }
 }

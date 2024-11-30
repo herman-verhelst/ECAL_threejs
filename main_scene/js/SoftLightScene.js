@@ -79,10 +79,9 @@ export default class SoftLightScene {
       // Contrôle de l'animation
       isAnimating: false,
       animationSpeed: 0.005,
-      amplitude: this.cubeSize,
-      duration: 80,
+      amplitude: 1.5,
       phaseOffset: 20,
-      downwardOffset: 3,
+      downwardOffset: 1.5,
     };
   }
 
@@ -229,8 +228,11 @@ export default class SoftLightScene {
       this.controls.update();
     }
 
+    // Update cube transitions
+    this.cubes.forEach((cube) => cube.update());
+
     // Met à jour l'état de l'animation en fonction du contrôle GUI
-    this.animator.toggleAnimation(this.params.isAnimating);
+    // this.animator.toggleAnimation(this.params.isAnimating);
 
     // Met à jour tous les cubes
     this.animator.update(this.cubes, this.gridSize);
