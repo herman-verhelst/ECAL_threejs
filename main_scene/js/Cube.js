@@ -80,6 +80,8 @@ export default class Cube {
 
     // Store initial Y position
     this.initialY = this.mesh.position.y;
+    this.floorY = -4; // Floor level
+    this.isPressed = false;
   }
 
   set positionY(y) {
@@ -125,5 +127,20 @@ export default class Cube {
     context.fillRect(0, 0, 2, 2);
 
     return canvas;
+  }
+
+  togglePress() {
+    this.isPressed = !this.isPressed;
+    if (this.isPressed) {
+      this.mesh.material = this.material2;
+      this.mesh.position.y = this.floorY;
+    } else {
+      this.mesh.material = this.initialMaterial;
+      this.mesh.position.y = this.initialY;
+    }
+  }
+
+  get isDown() {
+    return this.isPressed;
   }
 }

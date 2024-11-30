@@ -59,6 +59,7 @@ export default class CubeAnimator {
     this.time += this.animationSpeed;
 
     cubes.forEach((cube, index) => {
+      if (cube.isPressed) return;
       const row = Math.floor(index / gridSize);
       const col = index % gridSize;
 
@@ -103,6 +104,7 @@ export default class CubeAnimator {
     this.transitionProgress = Math.min(this.transitionProgress, 1);
 
     cubes.forEach((cube) => {
+      if (cube.isPressed) return;
       const currentY = cube.mesh.position.y;
       const targetY = cube.initialY;
       const newY = this.lerp(
@@ -201,6 +203,7 @@ export default class CubeAnimator {
     const startEase = this.easeOutCubic(this.startProgress);
 
     cubes.forEach((cube, index) => {
+      if (cube.isPressed) return;
       const row = Math.floor(index / gridSize);
       const col = index % gridSize;
 

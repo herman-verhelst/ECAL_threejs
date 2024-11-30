@@ -5,6 +5,7 @@ import GuiControls from "./GuiControls.js";
 import Lights from "./Lights.js";
 import CubeAnimator from "./CubeAnimator.js";
 import Floor from "./Floor.js";
+import Interaction from "./Interaction.js";
 
 /**
  * Classe principale qui gère la scène 3D
@@ -42,6 +43,9 @@ export default class SoftLightScene {
 
     // Chargement du motif initial de la matrice
     this.loadMatrixPattern();
+
+    // Setup interaction after cubes are created
+    this.setupInteraction();
   }
 
   /**
@@ -211,6 +215,13 @@ export default class SoftLightScene {
   }
 
   /**
+   * Configure l'interaction avec les cubes
+   */
+  setupInteraction() {
+    this.interaction = new Interaction(this.camera, this.scene, this.cubes);
+  }
+
+  /**
    * Boucle de mise à jour pour l'animation
    */
   update() {
@@ -223,6 +234,11 @@ export default class SoftLightScene {
 
     // Met à jour tous les cubes
     this.animator.update(this.cubes, this.gridSize);
+
+    // Update interactions
+    if (this.interaction) {
+      this.interaction.update();
+    }
   }
 
   /**
@@ -296,6 +312,9 @@ export default class SoftLightScene {
     }
     if (this.floor) {
       this.floor.removeFromScene(this.scene);
+    }
+    if (this.interaction) {
+      this.interaction.dispose();
     }
     window.removeEventListener("resize", this.onResize);
   }
