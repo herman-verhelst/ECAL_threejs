@@ -69,7 +69,11 @@ export default class Cube {
     const centerOffset = ((params.gridSize - 1) * params.spacing) / 2;
     this.mesh.position.x = params.j * params.spacing - centerOffset;
     this.mesh.position.z = params.i * params.spacing - centerOffset;
-    this.mesh.position.y = params.cubeSize - 4;
+
+    // Set initial Y position at the bottom of the hole
+    const holeDepth = 3; // Same as in Floor class
+    const floorY = -4; // Same as in Floor class
+    this.mesh.position.y = floorY + holeDepth;
 
     this.mesh.castShadow = true;
     this.mesh.receiveShadow = true;

@@ -78,6 +78,7 @@ export default class SoftLightScene {
       amplitude: this.cubeSize,
       duration: 80,
       phaseOffset: 20,
+      downwardOffset: 3,
     };
   }
 

@@ -57,8 +57,12 @@ export default class GuiControls {
       .name("Speed")
       .onChange(() => this.updateCallback());
     animationFolder
-      .add(this.params, "amplitude", 0, 10)
+      .add(this.params, "amplitude", 0, 3)
       .name("Height")
+      .onChange(() => this.updateCallback());
+    animationFolder
+      .add(this.params, "downwardOffset", 0, 5)
+      .name("Depth")
       .onChange(() => this.updateCallback());
     animationFolder
       .add(this.params, "duration", 40, 200)
