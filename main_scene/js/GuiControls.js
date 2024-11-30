@@ -49,9 +49,25 @@ export default class GuiControls {
       .add(this.params, "envMapIntensity", 0, 3)
       .onChange(() => this.updateCallback());
 
-    // Add Animation Control folder
+    // Add Animation Control folder with more parameters
     const animationFolder = this.gui.addFolder("Animation Control");
     animationFolder.add(this.params, "isAnimating").name("Animation On/Off");
+    animationFolder
+      .add(this.params, "animationSpeed", 0.001, 0.01)
+      .name("Speed")
+      .onChange(() => this.updateCallback());
+    animationFolder
+      .add(this.params, "amplitude", 0, 10)
+      .name("Height")
+      .onChange(() => this.updateCallback());
+    animationFolder
+      .add(this.params, "duration", 40, 200)
+      .name("Duration")
+      .onChange(() => this.updateCallback());
+    animationFolder
+      .add(this.params, "phaseOffset", 0, 50)
+      .name("Phase Offset")
+      .onChange(() => this.updateCallback());
     animationFolder.open();
   }
 

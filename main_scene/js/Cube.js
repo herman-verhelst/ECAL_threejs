@@ -4,6 +4,18 @@ import { RGBELoader } from "three/addons/loaders/RGBELoader.js";
 export default class Cube {
   constructor(params) {
     console.log(params);
+    // Define pastel colors for cubes
+    this.pastelColors = [
+      "#FFB5E8", // pink
+      "#B5DEFF", // blue
+      "#E7FFAC", // green
+      "#FFC9DE", // light pink
+      "#97E5D7", // mint
+      "#FFD4B5", // peach
+      "#D4B5FF", // purple
+      "#B5ECD4", // seafoam
+      "#FFE5B5", // yellow
+    ];
     /****************** */
     const texture = new THREE.CanvasTexture(this.generateTexture());
     texture.magFilter = THREE.NearestFilter;
@@ -44,8 +56,8 @@ export default class Cube {
 
     this.initialMaterial = new THREE.MeshStandardMaterial({
       color:
-        params.pastelColors[
-          (params.i * params.gridSize + params.j) % params.pastelColors.length
+        this.pastelColors[
+          (params.i * params.gridSize + params.j) % this.pastelColors.length
         ],
       roughness: 0.6,
       metalness: 0.1,
@@ -92,7 +104,7 @@ export default class Cube {
     } else {
       // Use standard material with original pastel colors
       this.mesh.material = new THREE.MeshStandardMaterial({
-        color: params.pastelColors[index % params.pastelColors.length],
+        color: this.pastelColors[index % this.pastelColors.length],
         roughness: 0.6,
         metalness: 0.1,
       });
