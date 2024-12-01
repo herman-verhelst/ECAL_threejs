@@ -2,15 +2,15 @@ import FirebaseConfig from "./FirebaseConfig.js";
 import DebugLayer from "./UI_tools/DebugLayer.js";
 
 /**
- * Classe qui écoute les changements dans Firebase et met à jour les cubes en conséquence
+ * Classe qui écoute les changements dans Firebase et met à jour les shapes en conséquence
  */
 export default class FirebaseListener {
   /**
    * Initialise l'écouteur Firebase
-   * @param {Array} cubes - Tableau des cubes à contrôler
+   * @param {Array} shapes - Tableau des shapes à contrôler
    */
-  constructor(cubes) {
-    this.cubes = cubes;
+  constructor(shapes) {
+    this.shapes = shapes;
     this.firstCall = false;
     this.initDebugLayer();
     this.setupListener();
@@ -59,37 +59,37 @@ export default class FirebaseListener {
    */
   processDataEntry(key, entry) {
     if (entry.target === FirebaseConfig.UID) {
-      this.cubes.forEach((cube) => {
-        if (this.shouldActivateCube(cube, key, entry)) {
-          cube.activate();
+      this.shapes.forEach((shape) => {
+        if (this.shouldActivateShape(shape, key, entry)) {
+          shape.activate();
         }
       });
     }
   }
 
   /**
-   * Vérifie si un cube doit être activé
-   * @param {Cube} cube - Le cube à vérifier
+   * Vérifie si un shape doit être activé
+   * @param {Shape} shape - Le shape à vérifier
    * @param {string} key - Identifiant de l'entrée
    * @param {Object} entry - Données de l'entrée
-   * @returns {boolean} - Vrai si le cube doit être activé
+   * @returns {boolean} - Vrai si le shape doit être activé
    */
-  shouldActivateCube(cube, key, entry) {
-    if (cube.uid !== key || cube.clickable) return false;
+  shouldActivateShape(shape, key, entry) {
+    if (shape.uid !== key || shape.clickable) return false;
 
     // Vérifie si un changement d'état est nécessaire
     return !(
-      (cube.isPressed && entry.position === "up") ||
-      (!cube.isPressed && entry.position === "down")
+      (shape.isPressed && entry.position === "up") ||
+      (!shape.isPressed && entry.position === "down")
     );
   }
 
   /**
-   * Met à jour la référence aux cubes si nécessaire
-   * @param {Array} newCubes - Nouveau tableau de cubes
+   * Met à jour la référence aux shapes si nécessaire
+   * @param {Array} newShapes - Nouveau tableau de shapes
    */
-  updateCubes(newCubes) {
-    this.cubes = newCubes;
+  updateCubes(newShapes) {
+    this.shapes = newShapes;
   }
 
   /**
