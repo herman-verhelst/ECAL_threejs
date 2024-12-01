@@ -3,7 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Cube from "./Cube.js";
 import GuiControls from "./GuiControls.js";
 import Lights from "./Lights.js";
-import CubeAnimator from "./CubeAnimator.js";
+// import CubeAnimator from "./CubeAnimator.js";
 import Floor from "./Floor.js";
 import Interaction from "./Interaction.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
@@ -43,7 +43,7 @@ export default class SoftLightScene {
     this.createCubes();
 
     // Configuration des propriétés d'animation
-    this.setupAnimation();
+    // this.setupAnimation();
 
     // Configuration des écouteurs d'événements
     this.setupEventListeners();
@@ -93,8 +93,14 @@ export default class SoftLightScene {
           // SI IL N'Y EN A QU'UN SEUL
           // this.cubes.find((cube) => cube.uid === key).togglePress(true);
           this.cubes.forEach((cube) => {
-            if (cube.uid === key) {
-              cube.togglePress(true);
+            console.log(cube.uid, cube.clickable);
+            if (cube.uid === key && !cube.clickable) {
+              if (
+                (cube.isPressed && data[key].position === "up") ||
+                (!cube.isPressed && data[key].position === "down")
+              )
+                return;
+              cube.activate();
             }
           });
         } else {
@@ -195,9 +201,9 @@ export default class SoftLightScene {
   /**
    * Configure les propriétés d'animation
    */
-  setupAnimation() {
-    this.animator = new CubeAnimator(this.params);
-  }
+  // setupAnimation() {
+  //   this.animator = new CubeAnimator(this.params);
+  // }
 
   /**
    * Configure les écouteurs d'événements
@@ -265,6 +271,7 @@ export default class SoftLightScene {
 
     // index for otherUIDs
     let index = 0;
+    let buttonIndex = 0;
     for (let i = 0; i < this.gridRows; i++) {
       for (let j = 0; j < this.gridColumns; j++) {
         this.params = {
@@ -276,8 +283,12 @@ export default class SoftLightScene {
           i: i,
           j: j,
           geometry: geometry, // Passage de la géométrie partagée
-          uid: j > 1 ? this.otherUIDs[index].uid : FirebaseConfig.UID,
-          name: j > 1 ? this.otherUIDs[index].name : FirebaseConfig.NAME,
+          uid:
+            j > 1 ? this.otherUIDs[buttonIndex].uid : this.otherUIDs[index].uid, //FirebaseConfig.UID,
+          name:
+            j > 1
+              ? this.otherUIDs[buttonIndex].name
+              : this.otherUIDs[index].name, // FirebaseConfig.NAME,
         };
         console.log(index);
         const cube = new Cube(this.params);
@@ -286,6 +297,8 @@ export default class SoftLightScene {
 
         // on incrémente l'index juste pour les 2première col
         if (j > 1) {
+          buttonIndex++;
+        } else {
           index++;
         }
       }
@@ -312,11 +325,8 @@ export default class SoftLightScene {
     // Mise à jour des transitions des cubes
     this.cubes.forEach((cube) => cube.update());
 
-    // Met à jour l'état de l'animation en fonction du contrôle GUI
-    // this.animator.toggleAnimation(this.params.isAnimating);
-
     // Met à jour tous les cubes
-    this.animator.update(this.cubes, this.gridSize);
+    // this.animator.update(this.cubes, this.gridSize);
 
     // Mise à jour des interactions
     if (this.interaction) {
@@ -417,8 +427,11 @@ export default class SoftLightScene {
         const response = await fetch("json/Config.json");
         const config = await response.json();
 
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get("uid");
+
         // Sauvegarder l'identifiant unique
-        FirebaseConfig.UID = config.UID;
+        FirebaseConfig.UID = uid || config.UID;
         FirebaseConfig.NAME = config.NAME;
 
         // Sauvegarder les identifiants des autres personnes

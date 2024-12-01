@@ -22,12 +22,12 @@ export default class GuiControls {
    */
   setupControls() {
     // Sélecteur du type de matériau
-    const materialTypeFolder = this.gui.addFolder("Material Type");
-    materialTypeFolder
-      .add(this.params, "transparentMaterial")
-      .name("Use Transparent Material")
-      .onChange(() => this.updateCallback());
-    materialTypeFolder.open();
+    // const materialTypeFolder = this.gui.addFolder("Material Type");
+    // materialTypeFolder
+    //   .add(this.params, "transparentMaterial")
+    //   .name("Use Transparent Material")
+    //   .onChange(() => this.updateCallback());
+    // materialTypeFolder.open();
 
     // Propriétés du matériau transparent
     const transparentMaterialFolder = this.gui.addFolder(
@@ -61,29 +61,29 @@ export default class GuiControls {
       .add(this.params, "envMapIntensity", 0, 3)
       .onChange(() => this.updateCallback());
 
-    // Contrôles de l'animation de vague
-    const animationFolder = this.gui.addFolder("Wave Animation");
-    animationFolder
-      .add(this.params, "isAnimating")
-      .name("Animation On/Off")
-      .onChange(() => this.updateCallback());
-    animationFolder
-      .add(this.params, "animationSpeed", 0.001, 0.01)
-      .name("Wave Speed")
-      .onChange(() => this.updateCallback());
-    animationFolder
-      .add(this.params, "amplitude", 0, 3)
-      .name("Wave Height")
-      .onChange(() => this.updateCallback());
-    animationFolder
-      .add(this.params, "downwardOffset", 0, 3)
-      .name("Wave Depth")
-      .onChange(() => this.updateCallback());
-    animationFolder
-      .add(this.params, "phaseOffset", 0, 50)
-      .name("Wave Offset")
-      .onChange(() => this.updateCallback());
-    animationFolder.open();
+    // // Contrôles de l'animation de vague
+    // const animationFolder = this.gui.addFolder("Wave Animation");
+    // animationFolder
+    //   .add(this.params, "isAnimating")
+    //   .name("Animation On/Off")
+    //   .onChange(() => this.updateCallback());
+    // animationFolder
+    //   .add(this.params, "animationSpeed", 0.001, 0.01)
+    //   .name("Wave Speed")
+    //   .onChange(() => this.updateCallback());
+    // animationFolder
+    //   .add(this.params, "amplitude", 0, 3)
+    //   .name("Wave Height")
+    //   .onChange(() => this.updateCallback());
+    // animationFolder
+    //   .add(this.params, "downwardOffset", 0, 3)
+    //   .name("Wave Depth")
+    //   .onChange(() => this.updateCallback());
+    // animationFolder
+    //   .add(this.params, "phaseOffset", 0, 50)
+    //   .name("Wave Offset")
+    //   .onChange(() => this.updateCallback());
+    // animationFolder.open();
   }
 
   /**

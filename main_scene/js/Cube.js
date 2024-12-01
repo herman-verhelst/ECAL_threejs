@@ -90,7 +90,7 @@ export default class Cube {
    * @param {number} index - Index du cube dans la grille
    */
   updateMaterial(params, index) {
-    if (params.transparentMaterial) {
+    if (this.mesh.material === this.materials.getTransparentMaterial()) {
       this.materials.updateTransparentMaterial(params);
       this.mesh.material = this.materials.getTransparentMaterial();
     } else {
@@ -128,23 +128,28 @@ export default class Cube {
   /**
    * Bascule l'état pressé/relâché du cube
    */
-  togglePress(force = false) {
+  togglePress() {
     // if (this.uid != FirebaseConfig.UID) {
-    if (this.clickable || force) {
+    if (this.clickable) {
       this.isPressed = !this.isPressed;
       this.startTransition(
         this.isPressed ? -this.params.cubeSize / 2 : this.initialY
       );
 
-      if (!force) {
-        FirebaseConfig.sendData("connections/" + FirebaseConfig.UID, {
-          target: this.uid,
-          name: this.name,
-          date: Date.now(),
-          value: [],
-        });
-      }
+      FirebaseConfig.sendData("connections/" + FirebaseConfig.UID, {
+        target: this.uid,
+        name: this.name,
+        date: Date.now(),
+        position: this.isPressed ? "down" : "up",
+      });
     }
+  }
+
+  activate() {
+    this.isPressed = !this.isPressed;
+    this.startTransition(
+      this.isPressed ? -this.params.cubeSize / 2 : this.initialY
+    );
   }
 
   /**
