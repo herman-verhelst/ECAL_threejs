@@ -50,5 +50,9 @@ class FirebaseConfig {
   set sourceUID(UID) {
     this.UID = UID;
   }
+
+  reset() {
+    this.sendData("connections/" + this.UID, null);
+  }
 }
 export default new FirebaseConfig();

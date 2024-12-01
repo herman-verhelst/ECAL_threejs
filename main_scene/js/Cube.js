@@ -33,6 +33,33 @@ export default class Cube {
     this.createMesh();
     this.setupPositioning();
     this.setupAnimationState();
+
+    // Add debug text on top face
+    const canvas = document.createElement("canvas");
+    canvas.width = 256;
+    canvas.height = 256;
+    const ctx = canvas.getContext("2d");
+    ctx.fillStyle = "white";
+    ctx.font = "48px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(this.uid, 128, 128);
+
+    const texture = new THREE.CanvasTexture(canvas);
+    const debugMaterial = new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+    });
+
+    const debugPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(this.params.cubeSize, this.params.cubeSize),
+      debugMaterial
+    );
+    debugPlane.rotation.x = -Math.PI / 2;
+    debugPlane.position.y = this.params.cubeSize / 2 + 0.01;
+    debugPlane.raycast = () => {}; // Add this line to disable raycasting
+
+    this.mesh.add(debugPlane);
   }
 
   /**

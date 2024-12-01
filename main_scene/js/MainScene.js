@@ -1,19 +1,19 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import Cube from "./Cube.js";
-import GuiControls from "./GuiControls.js";
+import GuiControls from "./UI_tools/GuiControls.js";
 import Lights from "./Lights.js";
 // import CubeAnimator from "./CubeAnimator.js";
 import Floor from "./Floor.js";
 import Interaction from "./Interaction.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import FirebaseConfig from "./FirebaseConfig.js";
-import DebugLayer from "./DebugLayer.js";
+import DebugLayer from "./UI_tools/DebugLayer.js";
 /**
  * Classe principale qui gère la scène 3D
  * Cette classe coordonne tous les éléments : cubes, lumières, animations, etc.
  */
-export default class SoftLightScene {
+export default class MainScene {
   /**
    * Initialise la scène avec les paramètres par défaut
    */
@@ -433,6 +433,7 @@ export default class SoftLightScene {
         // Sauvegarder l'identifiant unique
         FirebaseConfig.UID = uid || config.UID;
         FirebaseConfig.NAME = config.NAME;
+        FirebaseConfig.reset();
 
         // Sauvegarder les identifiants des autres personnes
         this.otherUIDs = config.OTHERS.map((other) => ({

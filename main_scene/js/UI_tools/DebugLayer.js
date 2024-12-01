@@ -6,8 +6,10 @@ export default class DebugLayer {
   constructor() {
     this.messages = [];
     this.maxMessages = 10;
+    this.isVisible = false;
     this.createDebugPanel();
     this.setupDraggable();
+    this.hide();
   }
 
   /**
@@ -42,10 +44,20 @@ export default class DebugLayer {
       borderBottom: "1px solid #444",
       display: "flex",
       justifyContent: "space-between",
+      alignItems: "center",
     });
-    this.titleBar.innerHTML = "<span>Firebase Debug</span>";
 
-    // Bouton pour effacer les messages
+    // Create title and buttons container
+    const titleSpan = document.createElement("span");
+    titleSpan.textContent = "Firebase Debug";
+
+    const buttonsContainer = document.createElement("div");
+    Object.assign(buttonsContainer.style, {
+      display: "flex",
+      gap: "5px",
+    });
+
+    // Clear button
     const clearButton = document.createElement("button");
     clearButton.textContent = "Clear";
     Object.assign(clearButton.style, {
@@ -55,9 +67,59 @@ export default class DebugLayer {
       padding: "2px 8px",
       borderRadius: "3px",
       cursor: "pointer",
+      fontSize: "11px",
     });
     clearButton.onclick = () => this.clearMessages();
-    this.titleBar.appendChild(clearButton);
+
+    // Close button
+    const closeButton = document.createElement("button");
+    closeButton.textContent = "×";
+    Object.assign(closeButton.style, {
+      backgroundColor: "#444",
+      color: "#fff",
+      border: "none",
+      padding: "2px 8px",
+      borderRadius: "3px",
+      cursor: "pointer",
+      fontSize: "14px",
+      fontWeight: "bold",
+    });
+    closeButton.onclick = () => this.hide();
+
+    // Add hover effect to buttons
+    [clearButton, closeButton].forEach((button) => {
+      button.onmouseover = () => {
+        button.style.backgroundColor = "#555";
+      };
+      button.onmouseout = () => {
+        button.style.backgroundColor = "#444";
+      };
+    });
+
+    // Assemble the title bar
+    buttonsContainer.appendChild(clearButton);
+    buttonsContainer.appendChild(closeButton);
+    this.titleBar.appendChild(titleSpan);
+    this.titleBar.appendChild(buttonsContainer);
+
+    // Create reopen button (initially hidden)
+    this.reopenButton = document.createElement("button");
+    Object.assign(this.reopenButton.style, {
+      position: "fixed",
+      top: "20px",
+      left: "20px",
+      padding: "5px 10px",
+      backgroundColor: "#444",
+      color: "#fff",
+      border: "none",
+      borderRadius: "3px",
+      cursor: "pointer",
+      zIndex: "1000",
+      display: "none",
+    });
+    this.reopenButton.textContent = "Show Debug";
+    this.reopenButton.onclick = () => this.show();
+    document.body.appendChild(this.reopenButton);
 
     // Conteneur pour les messages
     this.messagesContainer = document.createElement("div");
@@ -112,6 +174,8 @@ export default class DebugLayer {
    * @param {Object} data - Données à afficher
    */
   addMessage(data) {
+    if (!this.isVisible) return;
+
     const messageDiv = document.createElement("div");
     Object.assign(messageDiv.style, {
       padding: "5px",
@@ -151,10 +215,20 @@ export default class DebugLayer {
   }
 
   /**
-   * Affiche ou masque le panneau de débogage
+   * Hide the debug panel and show the reopen button
    */
-  toggle() {
-    this.container.style.display =
-      this.container.style.display === "none" ? "block" : "none";
+  hide() {
+    this.isVisible = false;
+    this.container.style.display = "none";
+    this.reopenButton.style.display = "block";
+  }
+
+  /**
+   * Show the debug panel and hide the reopen button
+   */
+  show() {
+    this.isVisible = true;
+    this.container.style.display = "block";
+    this.reopenButton.style.display = "none";
   }
 }

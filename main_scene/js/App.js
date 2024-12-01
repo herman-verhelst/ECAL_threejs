@@ -1,4 +1,4 @@
-import SoftLightScene from "./SoftLightScene.js";
+import MainScene from "./MainScene.js";
 
 export default class App {
   constructor() {
@@ -7,6 +7,6 @@ export default class App {
   }
 
   init() {
-    this.softLightScene = new SoftLightScene();
+    this.mainScene = new MainScene();
   }
 }
