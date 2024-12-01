@@ -1,14 +1,16 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import Cube from "./Cube.js";
+import ButtonCube from "./cubes/ButtonCube.js";
+import RemoteCube from "./cubes/RemoteCube.js";
 import GuiControls from "./UI_tools/GuiControls.js";
 import Lights from "./Lights.js";
-// import CubeAnimator from "./CubeAnimator.js";
 import Floor from "./Floor.js";
 import Interaction from "./Interaction.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import FirebaseConfig from "./FirebaseConfig.js";
 import DebugLayer from "./UI_tools/DebugLayer.js";
+import FirebaseListener from "./FirebaseListener.js";
+
 /**
  * Classe principale qui gère la scène 3D
  * Cette classe coordonne tous les éléments : cubes, lumières, animations, etc.
@@ -18,115 +20,42 @@ export default class MainScene {
    * Initialise la scène avec les paramètres par défaut
    */
   constructor() {
-    // on est obligé de déléguer l'init pour pouvoir utiliser async/await
-    // le constructeur ne peut pas être async
+    // Le constructeur ne peut pas être async, on délègue l'init
     this.init();
   }
 
   async init() {
-    // Charger la configuration
-    // Sauvegarder son identifiant unique de la config
-    // Charger les identifiants des autres personnes pour chaque cube
     await this.loadConfig();
 
-    // Configuration de base de la scène
     this.initializeBasicSettings();
-
-    // Configuration de tous les composants nécessaires
     this.setupRenderer();
     this.setupCamera();
     this.setupControls();
     this.setupLights();
-
-    // Création des éléments de la scène
-    this.createFloor();
-    this.createCubes();
-
-    // Configuration des propriétés d'animation
-    // this.setupAnimation();
-
-    // Configuration des écouteurs d'événements
     this.setupEventListeners();
-
-    // // Initialisation de l'écouteur Firebase
-    // this.firstCall = false;
-    // FirebaseConfig.listenToData("connections", (data) => {
-    //   if (!this.firstCall) {
-    //     this.firstCall = true;
-    //     return;
-    //   }
-    //   console.log(data);
-    //   // ------> MISE À JOUR DES FORMES DEPUIS L'ENTRÉE FIREBASE
-    // });
-
-    // Initialisation des contrôles GUI
     this.setupGUI();
+    this.createFloor();
 
-    // Chargement du motif initial de la matrice
-    this.loadMatrixPattern();
-
-    // Configuration de l'interaction après la création des cubes
+    await this.loadMatrixPattern();
     this.setupInteraction();
-
-    // Démarrage de la boucle de rendu
     this.render();
 
-    // Initialisation du debug layer
-    this.debugLayer = new DebugLayer();
-
-    // Mise à jour de l'écouteur Firebase
-    this.firstCall = false;
-    FirebaseConfig.listenToData("connections", (data) => {
-      if (!this.firstCall) {
-        this.firstCall = true;
-        return;
-      }
-      // Ajoute le message au debug layer
-      this.debugLayer.addMessage(data);
-
-      // on écoute TOUS LES CHANGEMENTS SUR LE RESEAU
-      // on ne réagit que lorsque qu'une target dans le json connections est égale à notre uid
-      Object.keys(data).forEach((key) => {
-        if (data[key].target === FirebaseConfig.UID) {
-          console.log("target is me", key);
-          // et on va activer le cube qui est designé comme KEY
-          // SI IL N'Y EN A QU'UN SEUL
-          // this.cubes.find((cube) => cube.uid === key).togglePress(true);
-          this.cubes.forEach((cube) => {
-            console.log(cube.uid, cube.clickable);
-            if (cube.uid === key && !cube.clickable) {
-              if (
-                (cube.isPressed && data[key].position === "up") ||
-                (!cube.isPressed && data[key].position === "down")
-              )
-                return;
-              cube.activate();
-            }
-          });
-        } else {
-          console.log("target is not me");
-        }
-      });
-    });
+    this.firebaseListener = new FirebaseListener(this.cubes);
   }
 
   /**
    * Initialise les paramètres de base de la scène
    */
   initializeBasicSettings() {
-    // Création de la scène
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color("#575656");
 
-    // Définition des dimensions de base
     this.cubeSize = 4;
     this.cubeSpacing = Math.max(this.cubeSize + 0.4, 6);
     this.gridRows = 3;
     this.gridColumns = 4;
 
-    // Initialisation des paramètres pour les matériaux et l'animation
     this.params = {
-      // Paramètres des matériaux
       color: 0xffffff,
       transmission: 1,
       opacity: 1,
@@ -138,8 +67,6 @@ export default class MainScene {
       specularColor: 0xffffff,
       envMapIntensity: 1,
       transparentMaterial: false,
-
-      // Contrôle de l'animation
       isAnimating: false,
       animationSpeed: 0.005,
       amplitude: 1.5,
@@ -199,13 +126,6 @@ export default class MainScene {
   }
 
   /**
-   * Configure les propriétés d'animation
-   */
-  // setupAnimation() {
-  //   this.animator = new CubeAnimator(this.params);
-  // }
-
-  /**
    * Configure les écouteurs d'événements
    */
   setupEventListeners() {
@@ -226,13 +146,28 @@ export default class MainScene {
   /**
    * Charge le motif initial de la matrice
    */
-  loadMatrixPattern() {
-    fetch("json/grid.json")
-      .then((response) => response.json())
-      .then((matrix) => this.setMaterialsByMatrix(matrix))
-      .catch((error) =>
-        console.error("Erreur lors du chargement de smiley.json:", error)
-      );
+  async loadMatrixPattern() {
+    try {
+      const response = await fetch("json/grid.json");
+      const matrix = await response.json();
+
+      if (
+        !matrix ||
+        matrix.length !== this.gridRows ||
+        matrix[0].length !== this.gridColumns
+      ) {
+        throw new Error("Dimensions de matrice invalides");
+      }
+
+      this.matrix = matrix;
+      this.createCubes();
+    } catch (error) {
+      console.error("Erreur lors du chargement de grid.json:", error);
+      this.matrix = Array(this.gridRows)
+        .fill()
+        .map(() => Array(this.gridColumns).fill(1));
+      this.createCubes();
+    }
   }
 
   /**
@@ -240,7 +175,6 @@ export default class MainScene {
    */
   createFloor() {
     this.floor = new Floor({
-      // gridSize: this.gridSize,
       gridColumns: this.gridColumns,
       gridRows: this.gridRows,
       cubeSize: this.cubeSize,
@@ -248,19 +182,17 @@ export default class MainScene {
     });
     this.floor.addToScene(this.scene);
 
-    // Mise à jour de l'arrière-plan de la scène pour correspondre aux couleurs du sol (assombries)
     const colors = this.floor.materials.getActiveColors();
     this.scene.background = new THREE.Color(colors.background);
   }
 
   /**
-   * Crée la grille de cubes
+   * Crée la grille de cubes selon le motif de la matrice
    */
   createCubes() {
     this.cubesGroup = new THREE.Group();
     this.cubes = [];
 
-    // Création de la géométrie partagée
     const geometry = new RoundedBoxGeometry(
       this.cubeSize,
       this.cubeSize,
@@ -269,12 +201,15 @@ export default class MainScene {
       0.4
     );
 
-    // index for otherUIDs
-    let index = 0;
+    let remoteIndex = 0;
     let buttonIndex = 0;
+
     for (let i = 0; i < this.gridRows; i++) {
       for (let j = 0; j < this.gridColumns; j++) {
-        this.params = {
+        const isButton = this.matrix[i][j] === 1;
+        const currentIndex = isButton ? buttonIndex : remoteIndex;
+
+        const params = {
           ...this.params,
           cubeSize: this.cubeSize,
           spacing: this.cubeSpacing,
@@ -282,29 +217,24 @@ export default class MainScene {
           gridColumns: this.gridColumns,
           i: i,
           j: j,
-          geometry: geometry, // Passage de la géométrie partagée
-          uid:
-            j > 1 ? this.otherUIDs[buttonIndex].uid : this.otherUIDs[index].uid, //FirebaseConfig.UID,
-          name:
-            j > 1
-              ? this.otherUIDs[buttonIndex].name
-              : this.otherUIDs[index].name, // FirebaseConfig.NAME,
+          geometry: geometry,
+          uid: this.otherUIDs[currentIndex].uid,
+          name: this.otherUIDs[currentIndex].name,
         };
-        console.log(index);
-        const cube = new Cube(this.params);
+
+        let cube = isButton ? new ButtonCube(params) : new RemoteCube(params);
+        isButton ? buttonIndex++ : remoteIndex++;
+
         this.cubes.push(cube);
         this.cubesGroup.add(cube.mesh);
-
-        // on incrémente l'index juste pour les 2première col
-        if (j > 1) {
-          buttonIndex++;
-        } else {
-          index++;
-        }
       }
     }
 
     this.scene.add(this.cubesGroup);
+
+    if (this.firebaseListener) {
+      this.firebaseListener.updateCubes(this.cubes);
+    }
   }
 
   /**
@@ -318,20 +248,9 @@ export default class MainScene {
    * Boucle de mise à jour pour l'animation
    */
   update() {
-    if (this.controls) {
-      this.controls.update();
-    }
-
-    // Mise à jour des transitions des cubes
+    if (this.controls) this.controls.update();
     this.cubes.forEach((cube) => cube.update());
-
-    // Met à jour tous les cubes
-    // this.animator.update(this.cubes, this.gridSize);
-
-    // Mise à jour des interactions
-    if (this.interaction) {
-      this.interaction.update();
-    }
+    if (this.interaction) this.interaction.update();
   }
 
   /**
@@ -364,57 +283,18 @@ export default class MainScene {
    */
   updateMaterials() {
     this.cubes.forEach((cube, index) => {
-      if (this.params.isAnimating) return;
-      cube.updateMaterial(this.params, index);
-    });
-
-    // Met à jour les paramètres de l'animateur lorsque le GUI change
-    if (this.animator) {
-      this.animator.updateParams(this.params);
-    }
-  }
-
-  /**
-   * Définit les matériaux en fonction du motif de la matrice
-   */
-  setMaterialsByMatrix(matrix) {
-    if (
-      !matrix ||
-      matrix.length !== this.gridRows ||
-      matrix[0].length !== this.gridColumns
-    ) {
-      console.error(
-        "Les dimensions de la matrice doivent correspondre à gridRows:",
-        this.gridRows,
-        "et gridColumns:",
-        this.gridColumns
-      );
-      return;
-    }
-    // console.log(matrix);
-    this.cubes.forEach((cube, index) => {
-      const x = index % this.gridColumns;
-      const y = Math.floor(index / this.gridColumns);
-      cube.setMaterialByMatrix(matrix[y][x]);
+      if (!this.params.isAnimating) cube.updateMaterial(this.params, index);
     });
   }
 
   /**
-   * Méthode de nettoyage
+   * Nettoie les ressources
    */
   cleanup() {
-    if (this.guiControls) {
-      this.guiControls.destroy();
-    }
-    if (this.lights) {
-      this.lights.dispose();
-    }
-    if (this.floor) {
-      this.floor.removeFromScene(this.scene);
-    }
-    if (this.interaction) {
-      this.interaction.dispose();
-    }
+    if (this.guiControls) this.guiControls.destroy();
+    if (this.lights) this.lights.dispose();
+    if (this.floor) this.floor.removeFromScene(this.scene);
+    if (this.interaction) this.interaction.dispose();
     window.removeEventListener("resize", this.onResize);
   }
 
@@ -422,7 +302,7 @@ export default class MainScene {
    * Charge la configuration depuis le fichier JSON
    */
   loadConfig() {
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve) => {
       try {
         const response = await fetch("json/Config.json");
         const config = await response.json();
@@ -430,12 +310,10 @@ export default class MainScene {
         const urlParams = new URLSearchParams(window.location.search);
         const uid = urlParams.get("uid");
 
-        // Sauvegarder l'identifiant unique
         FirebaseConfig.UID = uid || config.UID;
         FirebaseConfig.NAME = config.NAME;
         FirebaseConfig.reset();
 
-        // Sauvegarder les identifiants des autres personnes
         this.otherUIDs = config.OTHERS.map((other) => ({
           name: other.name,
           uid: other.uid,

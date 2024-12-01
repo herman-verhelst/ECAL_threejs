@@ -204,7 +204,7 @@ export default class Cube {
     const eased = this.easeInOutCubic(this.transitionProgress);
     const newY = this.currentY + (this.targetY - this.currentY) * eased;
     this.mesh.position.y = newY;
-
+    console.log("update", this.mesh.position.y);
     if (this.transitionProgress >= 1) {
       this.isTransitioning = false;
       this.mesh.position.y = this.targetY;
