@@ -10,9 +10,9 @@ import FirebaseConfig from "./FirebaseConfig.js";
 export default class Cube {
   // Valeurs par défaut pour les propriétés du cube
   static DEFAULTS = {
-    holeDepth: 3, // Profondeur du trou
+    holeDepth: 4, // Profondeur du trou
     floorY: -4, // Position Y du sol
-    transitionSpeed: 0.03, // Vitesse de transition
+    transitionSpeed: 0.1, // Vitesse de transition
   };
 
   /**
@@ -21,10 +21,12 @@ export default class Cube {
    */
   constructor(params) {
     this.params = params;
-    this.UID = params.UID;
+    this.uid = params.uid;
+    this.name = params.name;
+    console.log(this.uid);
 
     // Création des matériaux
-    const colorIndex = this.params.i * this.params.gridSize + this.params.j;
+    const colorIndex = this.params.i * this.params.gridColumns + this.params.j;
     this.materials = new Materials(this.params);
     this.materials.createStandardMaterial(colorIndex);
 
@@ -57,10 +59,13 @@ export default class Cube {
    * Configure la position initiale du cube dans la grille
    */
   setupPositioning() {
-    const centerOffset = ((this.params.gridSize - 1) * this.params.spacing) / 2;
+    const centerOffsetX =
+      ((this.params.gridColumns - 1) * this.params.spacing) / 2;
+    const centerOffsetZ =
+      ((this.params.gridRows - 1) * this.params.spacing) / 2;
 
-    this.mesh.position.x = this.params.j * this.params.spacing - centerOffset;
-    this.mesh.position.z = this.params.i * this.params.spacing - centerOffset;
+    this.mesh.position.x = this.params.j * this.params.spacing - centerOffsetX;
+    this.mesh.position.z = this.params.i * this.params.spacing - centerOffsetZ;
     this.mesh.position.y = Cube.DEFAULTS.floorY + Cube.DEFAULTS.holeDepth;
 
     this.initialY = this.mesh.position.y;
@@ -101,24 +106,45 @@ export default class Cube {
   setMaterialByMatrix(value) {
     // setup material by value
     if (value === 1) {
-      this.mesh.material = this.materials.getBlackMaterial();
+      // this.mesh.material = this.materials.getBlackMaterial();
+      // random color
+      // const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+      // this.mesh.material = this.materials.getColorizedStandardMaterial(
+      //   "#" + randomColor
+      // );
+      // set standard material
+      this.mesh.material = this.materials.getStandardMaterial();
+      this.clickable = true;
     } else {
       this.mesh.material = this.materials.getTransparentMaterial();
+      // set position so the top of the cube is at the floorY
+      this.mesh.position.y = -this.params.cubeSize / 2;
+      // this.initialY = -this.params.cubeSize / 2;
+      this.clickable = false;
+      this.isPressed = true;
     }
   }
 
   /**
    * Bascule l'état pressé/relâché du cube
    */
-  togglePress() {
-    this.isPressed = !this.isPressed;
-    this.startTransition(this.isPressed ? this.floorY : this.initialY);
+  togglePress(force = false) {
+    // if (this.uid != FirebaseConfig.UID) {
+    if (this.clickable || force) {
+      this.isPressed = !this.isPressed;
+      this.startTransition(
+        this.isPressed ? -this.params.cubeSize / 2 : this.initialY
+      );
 
-    FirebaseConfig.sendData("connections/" + FirebaseConfig.UID, {
-      target: this.UID,
-      date: Date.now(),
-      value: [],
-    });
+      if (!force) {
+        FirebaseConfig.sendData("connections/" + FirebaseConfig.UID, {
+          target: this.uid,
+          name: this.name,
+          date: Date.now(),
+          value: [],
+        });
+      }
+    }
   }
 
   /**

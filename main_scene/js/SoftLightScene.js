@@ -83,6 +83,24 @@ export default class SoftLightScene {
       }
       // Ajoute le message au debug layer
       this.debugLayer.addMessage(data);
+
+      // on écoute TOUS LES CHANGEMENTS SUR LE RESEAU
+      // on ne réagit que lorsque qu'une target dans le json connections est égale à notre uid
+      Object.keys(data).forEach((key) => {
+        if (data[key].target === FirebaseConfig.UID) {
+          console.log("target is me", key);
+          // et on va activer le cube qui est designé comme KEY
+          // SI IL N'Y EN A QU'UN SEUL
+          // this.cubes.find((cube) => cube.uid === key).togglePress(true);
+          this.cubes.forEach((cube) => {
+            if (cube.uid === key) {
+              cube.togglePress(true);
+            }
+          });
+        } else {
+          console.log("target is not me");
+        }
+      });
     });
   }
 
@@ -96,8 +114,9 @@ export default class SoftLightScene {
 
     // Définition des dimensions de base
     this.cubeSize = 4;
-    this.cubeSpacing = Math.max(this.cubeSize + 0.4, 8);
-    this.gridSize = 3;
+    this.cubeSpacing = Math.max(this.cubeSize + 0.4, 6);
+    this.gridRows = 3;
+    this.gridColumns = 4;
 
     // Initialisation des paramètres pour les matériaux et l'animation
     this.params = {
@@ -202,7 +221,7 @@ export default class SoftLightScene {
    * Charge le motif initial de la matrice
    */
   loadMatrixPattern() {
-    fetch("json/smiley.json")
+    fetch("json/grid.json")
       .then((response) => response.json())
       .then((matrix) => this.setMaterialsByMatrix(matrix))
       .catch((error) =>
@@ -215,7 +234,9 @@ export default class SoftLightScene {
    */
   createFloor() {
     this.floor = new Floor({
-      gridSize: this.gridSize,
+      // gridSize: this.gridSize,
+      gridColumns: this.gridColumns,
+      gridRows: this.gridRows,
       cubeSize: this.cubeSize,
       cubeSpacing: this.cubeSpacing,
     });
@@ -242,24 +263,31 @@ export default class SoftLightScene {
       0.4
     );
 
-    for (let i = 0; i < this.gridSize; i++) {
-      for (let j = 0; j < this.gridSize; j++) {
+    // index for otherUIDs
+    let index = 0;
+    for (let i = 0; i < this.gridRows; i++) {
+      for (let j = 0; j < this.gridColumns; j++) {
         this.params = {
           ...this.params,
           cubeSize: this.cubeSize,
           spacing: this.cubeSpacing,
-          gridSize: this.gridSize,
+          gridRows: this.gridRows,
+          gridColumns: this.gridColumns,
           i: i,
           j: j,
           geometry: geometry, // Passage de la géométrie partagée
-          UID: this.otherUIDs[i * this.gridSize + j]
-            ? this.otherUIDs[i * this.gridSize + j].name
-            : null,
+          uid: j > 1 ? this.otherUIDs[index].uid : FirebaseConfig.UID,
+          name: j > 1 ? this.otherUIDs[index].name : FirebaseConfig.NAME,
         };
-
+        console.log(index);
         const cube = new Cube(this.params);
         this.cubes.push(cube);
         this.cubesGroup.add(cube.mesh);
+
+        // on incrémente l'index juste pour les 2première col
+        if (j > 1) {
+          index++;
+        }
       }
     }
 
@@ -342,19 +370,21 @@ export default class SoftLightScene {
   setMaterialsByMatrix(matrix) {
     if (
       !matrix ||
-      matrix.length !== this.gridSize ||
-      matrix[0].length !== this.gridSize
+      matrix.length !== this.gridRows ||
+      matrix[0].length !== this.gridColumns
     ) {
       console.error(
-        "Les dimensions de la matrice doivent correspondre à gridSize:",
-        this.gridSize
+        "Les dimensions de la matrice doivent correspondre à gridRows:",
+        this.gridRows,
+        "et gridColumns:",
+        this.gridColumns
       );
       return;
     }
     // console.log(matrix);
     this.cubes.forEach((cube, index) => {
-      const x = index % this.gridSize;
-      const y = Math.floor(index / this.gridSize);
+      const x = index % this.gridColumns;
+      const y = Math.floor(index / this.gridColumns);
       cube.setMaterialByMatrix(matrix[y][x]);
     });
   }
@@ -388,12 +418,13 @@ export default class SoftLightScene {
         const config = await response.json();
 
         // Sauvegarder l'identifiant unique
-        FirebaseConfig.sourceUID = config.UID;
+        FirebaseConfig.UID = config.UID;
+        FirebaseConfig.NAME = config.NAME;
 
         // Sauvegarder les identifiants des autres personnes
         this.otherUIDs = config.OTHERS.map((other) => ({
           name: other.name,
-          UID: other.UID,
+          uid: other.uid,
         }));
       } catch (error) {
         console.error("Erreur lors du chargement de la configuration:", error);

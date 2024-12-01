@@ -192,6 +192,13 @@ export default class Materials {
   getStandardMaterial() {
     return this.standardMaterial;
   }
+  getColorizedStandardMaterial(color) {
+    return new THREE.MeshStandardMaterial({
+      color: color,
+      roughness: Materials.DEFAULTS.roughness,
+      metalness: Materials.DEFAULTS.metalness,
+    });
+  }
 
   /**
    * Crée le matériau pour le sol principal

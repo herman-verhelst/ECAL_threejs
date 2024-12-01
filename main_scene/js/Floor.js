@@ -9,20 +9,23 @@ export default class Floor {
   /**
    * Initialise une nouvelle instance de Floor
    * @param {Object} params - Paramètres de configuration du sol
-   * @param {number} params.gridSize - Taille de la grille (nombre de cubes par côté)
+   * @param {number} params.gridColumns - Nombre de colonnes de la grille
+   * @param {number} params.gridRows - Nombre de lignes de la grille
    * @param {number} params.cubeSize - Taille des cubes individuels
    * @param {number} params.cubeSpacing - Espacement entre les cubes
    */
   constructor(params) {
+    console.log("Floor constructor", params);
     // Stocke les paramètres de configuration
-    this.gridSize = params.gridSize;
+    this.gridColumns = params.gridColumns;
+    this.gridRows = params.gridRows;
     this.cubeSize = params.cubeSize;
     this.cubeSpacing = params.cubeSpacing;
 
     // Définit les dimensions du sol et des trous
     this.floorSize = 52; // Taille totale du sol
     this.holeSize = this.cubeSize + 0.4; // Taille des trous légèrement plus grande que les cubes
-    this.holeDepth = 3; // Profondeur des trous
+    this.holeDepth = 4; // Profondeur des trous
 
     // Create materials instance
     this.materials = new Materials(params);
@@ -55,13 +58,14 @@ export default class Floor {
    */
   createHoles() {
     const holes = [];
-    for (let i = 0; i < this.gridSize; i++) {
-      for (let j = 0; j < this.gridSize; j++) {
+    for (let i = 0; i < this.gridRows; i++) {
+      for (let j = 0; j < this.gridColumns; j++) {
         const holeShape = new THREE.Path();
         // Calcule la position centrale de chaque trou
-        const centerOffset = ((this.gridSize - 1) * this.cubeSpacing) / 2;
-        const x = j * this.cubeSpacing - centerOffset - this.holeSize / 2;
-        const y = i * this.cubeSpacing - centerOffset - this.holeSize / 2;
+        const centerOffsetX = ((this.gridColumns - 1) * this.cubeSpacing) / 2;
+        const centerOffsetZ = ((this.gridRows - 1) * this.cubeSpacing) / 2;
+        const x = j * this.cubeSpacing - centerOffsetX - this.holeSize / 2;
+        const y = i * this.cubeSpacing - centerOffsetZ - this.holeSize / 2;
 
         // Crée un rectangle arrondi pour chaque trou
         const radius = 0.4; // Rayon des coins arrondis

@@ -1,33 +1,30 @@
 {
-  "UID": "1234567890",
+  "UID": "1240",
+  "NAME": "verhelst-jonathan",
   "OTHERS": [
     {
       "name": "andreas-steve",
-      "UID": "1234"
+      "uid": "1234"
     },
     {
       "name": "laurine-nyria",
-      "UID": "1234"
+      "uid": "1235"
     },
     {
       "name": "teo-brikeld",
-      "UID": "1234"
-    },
-    {
-      "name": "teo-brikeld",
-      "UID": "1234"
+      "uid": "1236"
     },
     {
       "name": "shana-yann",
-      "UID": "1234"
+      "uid": "1238"
     },
     {
       "name": "daniel-dalia",
-      "UID": "1234"
+      "uid": "1239"
     },
     {
       "name": "verhelst-jonathan",
-      "UID": "1234"
+      "uid": "1240"
     }
   ]
 }
