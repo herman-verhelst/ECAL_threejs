@@ -5,10 +5,10 @@ import GuiControls from "./GuiControls.js";
 import Lights from "./Lights.js";
 import CubeAnimator from "./CubeAnimator.js";
 import Floor from "./Floor.js";
-import FloorSimple from "./FloorSimple.js";
 import Interaction from "./Interaction.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import FirebaseConfig from "./FirebaseConfig.js";
+import DebugLayer from "./DebugLayer.js";
 /**
  * Classe principale qui gère la scène 3D
  * Cette classe coordonne tous les éléments : cubes, lumières, animations, etc.
@@ -18,6 +18,8 @@ export default class SoftLightScene {
    * Initialise la scène avec les paramètres par défaut
    */
   constructor() {
+    // on est obligé de déléguer l'init pour pouvoir utiliser async/await
+    // le constructeur ne peut pas être async
     this.init();
   }
 
@@ -46,16 +48,16 @@ export default class SoftLightScene {
     // Configuration des écouteurs d'événements
     this.setupEventListeners();
 
-    // Initialisation de l'écouteur Firebase
-    this.firstCall = false;
-    FirebaseConfig.listenToData("connections", (data) => {
-      if (!this.firstCall) {
-        this.firstCall = true;
-        return;
-      }
-      console.log(data);
-      // ------> MISE À JOUR DES FORMES DEPUIS L'ENTRÉE FIREBASE
-    });
+    // // Initialisation de l'écouteur Firebase
+    // this.firstCall = false;
+    // FirebaseConfig.listenToData("connections", (data) => {
+    //   if (!this.firstCall) {
+    //     this.firstCall = true;
+    //     return;
+    //   }
+    //   console.log(data);
+    //   // ------> MISE À JOUR DES FORMES DEPUIS L'ENTRÉE FIREBASE
+    // });
 
     // Initialisation des contrôles GUI
     this.setupGUI();
@@ -68,6 +70,20 @@ export default class SoftLightScene {
 
     // Démarrage de la boucle de rendu
     this.render();
+
+    // Initialisation du debug layer
+    this.debugLayer = new DebugLayer();
+
+    // Mise à jour de l'écouteur Firebase
+    this.firstCall = false;
+    FirebaseConfig.listenToData("connections", (data) => {
+      if (!this.firstCall) {
+        this.firstCall = true;
+        return;
+      }
+      // Ajoute le message au debug layer
+      this.debugLayer.addMessage(data);
+    });
   }
 
   /**
