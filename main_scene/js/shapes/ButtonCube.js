@@ -1,8 +1,7 @@
-import BaseCube from "./BaseCube.js";
+import BaseShape from "./BaseShape.js";
 import FirebaseConfig from "../FirebaseConfig.js";
-import * as THREE from "three";
 
-export default class ButtonCube extends BaseCube {
+export default class ButtonCube extends BaseShape {
   constructor(params) {
     super(params);
     this.clickable = true;

@@ -4,27 +4,33 @@
   "OTHERS": [
     {
       "name": "andreas-steve",
-      "uid": "1"
+      "uid": "1",
+      "title": "snow"
     },
     {
       "name": "laurine-nyria",
-      "uid": "2"
+      "uid": "2",
+      "title": "flower"
     },
     {
       "name": "teo-brikeld",
-      "uid": "3"
+      "uid": "3",
+      "title": "fireworks"
     },
     {
       "name": "shana-yann",
-      "uid": "4"
+      "uid": "4",
+      "title": "snow"
     },
     {
       "name": "daniel-dalia",
-      "uid": "5"
+      "uid": "5",
+      "title": "snow"
     },
     {
       "name": "verhelst-jonathan",
-      "uid": "6"
+      "uid": "6",
+      "title": "fireworks"
     }
   ]
 }

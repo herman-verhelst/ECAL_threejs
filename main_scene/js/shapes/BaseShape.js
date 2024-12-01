@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import Materials from "../Materials.js";
 
-export default class BaseCube {
+export default class BaseShape {
   static DEFAULTS = {
     holeDepth: 4,
     floorY: -4,
@@ -52,17 +52,17 @@ export default class BaseCube {
     this.mesh.position.x = this.params.j * this.params.spacing - centerOffsetX;
     this.mesh.position.z = this.params.i * this.params.spacing - centerOffsetZ;
     this.mesh.position.y =
-      BaseCube.DEFAULTS.floorY + BaseCube.DEFAULTS.holeDepth;
+      BaseShape.DEFAULTS.floorY + BaseShape.DEFAULTS.holeDepth;
 
     this.initialY = this.mesh.position.y;
-    this.floorY = BaseCube.DEFAULTS.floorY;
+    this.floorY = BaseShape.DEFAULTS.floorY;
   }
 
   setupAnimationState() {
     this.isPressed = false;
     this.isTransitioning = false;
     this.transitionProgress = 0;
-    this.transitionSpeed = BaseCube.DEFAULTS.transitionSpeed;
+    this.transitionSpeed = BaseShape.DEFAULTS.transitionSpeed;
     this.currentY = this.initialY;
     this.targetY = this.initialY;
   }

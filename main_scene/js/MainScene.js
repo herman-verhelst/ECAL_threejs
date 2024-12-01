@@ -1,14 +1,13 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import ButtonCube from "./cubes/ButtonCube.js";
-import RemoteCube from "./cubes/RemoteCube.js";
+import ButtonCube from "./shapes/ButtonCube.js";
+import RemoteCube from "./shapes/RemoteCube.js";
 import GuiControls from "./UI_tools/GuiControls.js";
 import Lights from "./Lights.js";
 import Floor from "./Floor.js";
 import Interaction from "./Interaction.js";
 import { RoundedBoxGeometry } from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import FirebaseConfig from "./FirebaseConfig.js";
-import DebugLayer from "./UI_tools/DebugLayer.js";
 import FirebaseListener from "./FirebaseListener.js";
 
 /**
@@ -220,6 +219,7 @@ export default class MainScene {
           geometry: geometry,
           uid: this.otherUIDs[currentIndex].uid,
           name: this.otherUIDs[currentIndex].name,
+          title: this.otherUIDs[currentIndex].title,
         };
 
         let cube = isButton ? new ButtonCube(params) : new RemoteCube(params);
@@ -248,9 +248,22 @@ export default class MainScene {
    * Boucle de mise à jour pour l'animation
    */
   update() {
-    if (this.controls) this.controls.update();
-    this.cubes.forEach((cube) => cube.update());
-    if (this.interaction) this.interaction.update();
+    if (this.controls) {
+      this.controls.update();
+    }
+
+    // Update cubes
+    this.cubes.forEach((cube) => {
+      cube.update();
+      // If cube has particle system, pass camera
+      if (cube.particleSystem) {
+        cube.particleSystem.update(this.camera);
+      }
+    });
+
+    if (this.interaction) {
+      this.interaction.update();
+    }
   }
 
   /**
@@ -317,6 +330,7 @@ export default class MainScene {
         this.otherUIDs = config.OTHERS.map((other) => ({
           name: other.name,
           uid: other.uid,
+          title: other.title,
         }));
       } catch (error) {
         console.error("Erreur lors du chargement de la configuration:", error);
