@@ -7,6 +7,8 @@ import { modelDescriptors } from "./modelDescriptors";
 export default class App {
 	constructor() {
 		this.meshes = [];
+		this.mixers = [];
+		this.clock = new THREE.Clock();
 		this.width = window.innerWidth;
 		this.height = window.innerHeight;
 		this.arrayModels = modelDescriptors;
@@ -40,11 +42,21 @@ export default class App {
 	createModels() {
 		this.models.forEach((model) => {
 			let obj = model.object;
-			obj.position.x = Math.random() * 6 - 3;
-			obj.position.z = Math.random() * 6 - 3;
-			obj.position.y = Math.random() * 6 - 3;
+			const pos = model.props.position;
+			const scale = model.props.scale;
+			const rot = model.props.rotation;
+			obj.position.set(pos.x, pos.y, pos.z);
+			obj.scale.set(scale.x, scale.y, scale.z);
+			obj.rotation.set(rot.x, rot.y, rot.z);
+
 			this.scene.add(obj);
 			this.meshes.push(obj);
+			if (model.animated == true) {
+				const mixer = new THREE.AnimationMixer(obj);
+				let action = mixer.clipAction(obj.animations[0]).play();
+				action.play();
+				this.mixers.push(mixer);
+			}
 		});
 	}
 
@@ -63,11 +75,13 @@ export default class App {
 	}
 
 	createLights() {
-		const lightDirectional = new THREE.DirectionalLight(0xffffff, 100, 100);
+		const lightDirectional = new THREE.DirectionalLight(0xffffff, 10, 10);
 		lightDirectional.position.set(0, 10, 10);
-		const pointLight = new THREE.PointLight(0xffffff, 10, 1000);
-		pointLight.position.set(0, 0, -10);
+		const pointLight = new THREE.PointLight(0xffffff, 1, 1000);
+		pointLight.position.set(0, 1, 0);
 		this.scene.add(lightDirectional, pointLight);
+		const helper = new THREE.PointLightHelper(pointLight, 5);
+		// this.scene.add(helper);
 		this.lights.directional = lightDirectional;
 		this.lights.point = pointLight;
 	}
@@ -88,12 +102,17 @@ export default class App {
 	}
 
 	render() {
+		const delta = this.clock.getDelta();
+		this.mixers.forEach((mixer) => {
+			mixer.update(delta);
+		});
 		this.meshes.forEach((mesh, index) => {
-			mesh.position.z += Math.cos(Date.now() * 0.001 + index * 10) * 0.01;
+			// mesh.position.z += Math.cos(Date.now() * 0.001 + index * 10) * 0.01;
 			mesh.rotation.y += Math.sin(Date.now() * 0.001 + index * 10) * 0.001;
 		});
-		this.lights.point.position.z = Math.sin(Date.now() * 0.001) * 20;
-		this.lights.point.position.x = Math.cos(Date.now() * 0.001) * 20;
+		this.lights.point.position.y = Math.sin(Date.now() * 0.001) * 10;
+		this.lights.point.position.z = Math.sin(Date.now() * 0.001) * 10;
+		this.lights.point.position.x = Math.cos(Date.now() * 0.001) * 10;
 		this.renderer.render(this.scene, this.camera);
 		requestAnimationFrame(this.render.bind(this));
 	}
