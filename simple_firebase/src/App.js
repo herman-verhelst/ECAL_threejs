@@ -72,11 +72,11 @@ export default class App {
     // Écouter tous les messages
     FirebaseConfig.listenToData("messages", (data) => {
       if (data) {
-        console.log("Messages reçus:", data);
+        console.log("Données reçues:", data);
         // Traitement et affichage des messages reçus
         document.getElementById("zoneMessages").value = "";
+
         Object.entries(data).forEach(([uid, messageData]) => {
-          console.log(`Message de ${uid}:`, messageData.message);
           // Afficher les messages dans la zone de texte
           document.getElementById(
             "zoneMessages"

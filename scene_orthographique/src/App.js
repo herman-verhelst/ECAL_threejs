@@ -5,12 +5,14 @@ export default class App {
     // === Configuration du moteur de rendu (Renderer) ===
     // Création d'un renderer WebGL avec antialiasing pour des bords plus lisses
     this.renderer = new THREE.WebGLRenderer({ antialias: true });
+
     // Adaptation de la taille du renderer à la fenêtre
     this.renderer.setSize(window.innerWidth, window.innerHeight);
     // Activation des ombres dans le renderer
     this.renderer.shadowMap.enabled = true;
     // Utilisation d'ombres douces de type PCF
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
     // Ajout du canvas de rendu au document HTML
     document.body.appendChild(this.renderer.domElement);
 
@@ -82,16 +84,18 @@ export default class App {
       color: 0x3060ff,
       roughness: 1,
       metalness: 0.5, // Aspect semi-métallique
+      // wireframe: true, // Affichage en mode
     });
 
     const shinyMaterial = new THREE.MeshStandardMaterial({
       color: 0x3060ff,
       roughness: 0.5, // Surface plus lisse
       metalness: 0.8, // Aspect très métallique
+      // wireframe: true, // Affichage en mode fil de fer
     });
 
     // Configuration de la sphère avec le matériau brillant
-    this.sphere = new THREE.Mesh(sphereGeometry, shinyMaterial);
+    this.sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     this.sphere.castShadow = true;
     this.sphere.receiveShadow = true;
     this.sphere.position.set(2, 1, 0); // Position à droite du centre
@@ -116,7 +120,7 @@ export default class App {
 
     // === Gestion des événements ===
     // Adaptation au redimensionnement de la fenêtre
-    window.addEventListener("resize", this.onWindowResize.bind(this));
+    // window.addEventListener("resize", this.onWindowResize.bind(this));
   }
 
   // Boucle d'animation pour le rendu continu
