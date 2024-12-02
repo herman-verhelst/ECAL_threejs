@@ -1,3 +1,3 @@
 # ECAL_MID2_WORKSHOP_2025
 
-![](assets/20241202_140119_20241202_135530_Capture_d_écran 2024-12-02 à 13.55.17.png)
+![](assets/20241202_140238_6x6.png)
