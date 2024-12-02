@@ -84,7 +84,7 @@ export default class BaseShape {
 
     const eased = this.easeInOutCubic(this.transitionProgress);
     const newY = this.currentY + (this.targetY - this.currentY) * eased;
-    console.log("update", newY);
+    // console.log("update", newY);
     this.mesh.position.y = newY;
 
     if (this.transitionProgress >= 1) {
@@ -140,5 +140,9 @@ export default class BaseShape {
     debugPlane.raycast = () => {};
 
     this.mesh.add(debugPlane);
+  }
+
+  updateMaterial(params, index) {
+    this.materials.updateTransparentMaterial(params);
   }
 }
