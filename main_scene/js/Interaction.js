@@ -34,20 +34,50 @@ export default class Interaction {
 
     // Lance un rayon depuis la caméra à travers la position de la souris
     this.raycaster.setFromCamera(this.mouse, this.camera);
+
+    const arrayChildren = [];
+    this.cubes.map((cube) => {
+      cube.traverse((child) => {
+        if (child.isMesh) {
+          arrayChildren.push(child);
+        }
+      });
+    });
+
+    
+
     const intersects = this.raycaster.intersectObjects(
-      this.cubes.map((cube) => cube.mesh)
+      arrayChildren
     );
 
-    // Vérifie si un cube a été touché
-    if (intersects.length > 0) {
-      const clickedCube = this.cubes.find(
-        (cube) => cube.mesh === intersects[0].object
-      );
 
+    let dist =null;
+    let clickedCube  = null;
+    if(intersects.length>0){
+      intersects.map((intersect)=>{
+        if(dist==null || intersect.distance<dist){
+          clickedCube = intersect.object;
+      }});
+
+      console.log(clickedCube)
       if (clickedCube) {
-        clickedCube.togglePress();
+        // clickedCube.togglePress();
       }
     }
+
+
+
+    // Vérifie si un cube a été touché
+    // if (intersects.length > 0) {
+    //   const clickedCube = this.cubes.find(
+    //     (cube) => cube.mesh === intersects[0].object
+    //   );
+
+
+    //   console.log(clickedCube);
+
+     
+    // }
   }
 
   /**

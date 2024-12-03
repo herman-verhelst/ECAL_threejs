@@ -45,7 +45,7 @@ export default class MainScene {
         this.setupEventListeners();
         this.setupGUI();
 
-        //this.setupInteraction();
+        this.setupInteraction();
         this.render();
 
         // this.firebaseListener = new FirebaseListener(this.cubes);
@@ -87,6 +87,24 @@ export default class MainScene {
 
     createModels() {
 
+        this.cube = new THREE.Mesh();
+
+        this.cube.geometry = new RoundedBoxGeometry(1, 1, 1, 0.1, 2);
+        this.cube.material = new THREE.MeshStandardMaterial({
+            color: 0xffffff,
+        });
+
+        this.cube.castShadow = true;
+        this.cube.receiveShadow = true;
+
+        this.cube.position.set(0, 0, 0);
+        this.cube.scale.set(1, 1, 1);
+        this.cube.rotation.set(0, 0, 0);
+
+        this.scene.add(this.cube);
+        this.meshes.push(this.cube);
+
+
         this.models.forEach((model) => {
             let obj = model.object;
             const pos = model.props.position;
@@ -111,6 +129,7 @@ export default class MainScene {
             this.scene.add(obj);
             this.meshes.push(obj);
 
+
             if (model.animated) {
                 const mixer = new THREE.AnimationMixer(obj);
                 let action = mixer.clipAction(obj.animations[0]).play();
@@ -118,6 +137,8 @@ export default class MainScene {
                 this.mixers.push(mixer);
             }
         });
+
+        // 
     }
 
     /**
@@ -199,7 +220,7 @@ export default class MainScene {
      * Configure l'interaction avec les cubes
      */
     setupInteraction() {
-        this.interaction = new Interaction(this.camera, this.scene, this.cubes);
+        this.interaction = new Interaction(this.camera, this.scene, this.meshes);
     }
 
     /**
