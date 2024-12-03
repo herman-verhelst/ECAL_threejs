@@ -11,10 +11,10 @@ export default class Interaction {
    * @param {THREE.Scene} scene - Scène Three.js
    * @param {Array} cubes - Tableau des cubes interactifs
    */
-  constructor(camera, scene, cubes) {
+  constructor(camera, scene, buttons) {
     this.camera = camera;
     this.scene = scene;
-    this.cubes = cubes;
+    this.buttons = buttons;
 
     // Initialisation du raycaster pour la détection des clics
     this.raycaster = new THREE.Raycaster();
@@ -35,49 +35,41 @@ export default class Interaction {
     // Lance un rayon depuis la caméra à travers la position de la souris
     this.raycaster.setFromCamera(this.mouse, this.camera);
 
-    const arrayChildren = [];
-    this.cubes.map((cube) => {
-      cube.traverse((child) => {
-        if (child.isMesh) {
-          arrayChildren.push(child);
-        }
-      });
+    const meshes = [];
+
+    this.buttons.forEach((button) => {
+      if (button.model) {
+        button.model.object.traverse((child) => {
+          if (child.isMesh) {
+            meshes.push(child);
+          }
+        });
+      } else {
+        meshes.push(button.mesh);
+      }
     });
 
-    
-
-    const intersects = this.raycaster.intersectObjects(
-      arrayChildren
-    );
 
 
-    let dist =null;
-    let clickedCube  = null;
-    if(intersects.length>0){
-      intersects.map((intersect)=>{
-        if(dist==null || intersect.distance<dist){
-          clickedCube = intersect.object;
-      }});
-
-      console.log(clickedCube)
-      if (clickedCube) {
-        // clickedCube.togglePress();
-      }
-    }
-
-
+    const intersects = this.raycaster.intersectObjects(meshes);
+    console.log("intersects", intersects);
 
     // Vérifie si un cube a été touché
-    // if (intersects.length > 0) {
-    //   const clickedCube = this.cubes.find(
-    //     (cube) => cube.mesh === intersects[0].object
-    //   );
+    if (intersects.length > 0) {
+      const clickedButton = this.buttons.find((button) => {
+        // return button.model.object.children.includes(intersects[0].object);
+        if (button.model) {
+          return button.model.object.children.includes(intersects[0].object);
+        } else {
+          return button.mesh === intersects[0].object;
+        }
+      });
 
 
-    //   console.log(clickedCube);
-
-     
-    // }
+      if (clickedButton) {
+        clickedButton.togglePress();
+      }
+    }
   }
 
   /**

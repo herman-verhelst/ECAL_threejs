@@ -22,6 +22,9 @@ class FirebaseConfig {
     // Initialisation de Firebase
     this.app = initializeApp(this.config);
     this.database = getDatabase(this.app);
+
+    // DYNAMIC PATH
+    this.DEFAULT_PATH = "connections_orange";
   }
 
   /**
@@ -52,7 +55,7 @@ class FirebaseConfig {
   }
 
   reset() {
-    this.sendData("connections/" + this.UID, null);
+    this.sendData(this.DEFAULT_PATH + "/" + this.UID, null);
   }
 }
 export default new FirebaseConfig();

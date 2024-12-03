@@ -27,7 +27,7 @@ export default class FirebaseListener {
    * Configure l'écouteur sur le nœud "connections" de Firebase
    */
   setupListener() {
-    FirebaseConfig.listenToData("connections", (data) => {
+    FirebaseConfig.listenToData("connections_orange", (data) => {
       // Ignore le premier appel pour éviter les effets indésirables à l'initialisation
       if (!this.firstCall) {
         this.firstCall = true;

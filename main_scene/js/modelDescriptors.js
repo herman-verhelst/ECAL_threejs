@@ -6,6 +6,8 @@ export const modelDescriptors = [
 		id: "fruitbowl",
 		type: "obj",
 		animated: false,
+		target: "brown",
+		clickable: true,
 		props: {
 			scale: { x: 10, y: 10, z: 10 },
 			position: { x: 0, y: -5, z: 0 },

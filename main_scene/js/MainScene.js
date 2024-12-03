@@ -29,6 +29,8 @@ export default class MainScene {
         this.clock = new THREE.Clock();
         this.arrayModels = modelDescriptors;
 
+        this.buttons = [];
+
         this.preload();
         this.init();
     }
@@ -44,8 +46,9 @@ export default class MainScene {
         this.createModels();
         this.setupEventListeners();
         this.setupGUI();
-
+        // this.createFloor();
         this.setupInteraction();
+        this.FirebaseListener = new FirebaseListener(this.buttons);
         this.render();
 
         // this.firebaseListener = new FirebaseListener(this.cubes);
@@ -97,7 +100,7 @@ export default class MainScene {
         this.cube.castShadow = true;
         this.cube.receiveShadow = true;
 
-        this.cube.position.set(0, 0, 0);
+        this.cube.position.set(10, 10, 0);
         this.cube.scale.set(1, 1, 1);
         this.cube.rotation.set(0, 0, 0);
 
@@ -126,8 +129,16 @@ export default class MainScene {
                 }
             })
 
+
+
             this.scene.add(obj);
-            this.meshes.push(obj);
+            if(model.clickable) {
+                const button = new ButtonCube({mesh: obj, model: model, ...model});
+                this.buttons.push(button);
+
+            }else{
+                this.meshes.push(obj);
+            }
 
 
             if (model.animated) {
@@ -136,11 +147,13 @@ export default class MainScene {
                 action.play();
                 this.mixers.push(mixer);
             }
+
+
+            
         });
 
         // 
     }
-
     /**
      * Configure le rendu WebGL
      */
@@ -220,7 +233,7 @@ export default class MainScene {
      * Configure l'interaction avec les cubes
      */
     setupInteraction() {
-        this.interaction = new Interaction(this.camera, this.scene, this.meshes);
+        this.interaction = new Interaction(this.camera, this.scene, this.buttons);
     }
 
     /**
