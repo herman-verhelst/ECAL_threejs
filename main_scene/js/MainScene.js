@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
 import ButtonCube from "./shapes/ButtonCube.js";
 import RemoteCube from "./shapes/RemoteCube.js";
 import GuiControls from "./UI_tools/GuiControls.js";
@@ -30,32 +30,30 @@ export default class MainScene {
         this.arrayModels = modelDescriptors;
 
         this.buttons = [];
-
-        this.preload();
         this.init();
     }
 
     async init() {
         await this.loadConfig();
-
-        this.initializeBasicSettings();
-        this.setupRenderer();
-        this.setupCamera();
-        this.setupControls();
-        this.setupLights();
-        this.createModels();
-        this.setupEventListeners();
-        this.setupGUI();
-        // this.createFloor();
-        this.setupInteraction();
-        this.FirebaseListener = new FirebaseListener(this.buttons);
-        this.render();
-
-        // this.firebaseListener = new FirebaseListener(this.cubes);
+        this.preload()
+            .then(() => {
+                this.initializeBasicSettings();
+                this.setupRenderer();
+                this.setupCamera();
+                this.setupControls();
+                this.setupLights();
+                this.createModels();
+                this.setupEventListeners();
+                this.setupGUI();
+                // this.createFloor();
+                this.setupInteraction();
+                this.FirebaseListener = new FirebaseListener(this.buttons);
+                this.render();
+            });
     }
 
     preload() {
-        loadModels(this.arrayModels)
+        return loadModels(this.arrayModels)
             .then((models) => {
                 this.models = models;
             });
@@ -90,8 +88,7 @@ export default class MainScene {
 
     createModels() {
 
-        this.cube = new THREE.Mesh();
-
+        this.cube = new THREE.Mesh()
         this.cube.geometry = new RoundedBoxGeometry(1, 1, 1, 0.1, 2);
         this.cube.material = new THREE.MeshStandardMaterial({
             color: 0xffffff,
@@ -106,7 +103,6 @@ export default class MainScene {
 
         this.scene.add(this.cube);
         this.meshes.push(this.cube);
-
 
         this.models.forEach((model) => {
             let obj = model.object;
@@ -130,30 +126,29 @@ export default class MainScene {
             })
 
 
-
             this.scene.add(obj);
-            if(model.clickable) {
+            if (model.clickable) {
                 const button = new ButtonCube({mesh: obj, model: model, ...model});
                 this.buttons.push(button);
 
-            }else{
+            } else {
                 this.meshes.push(obj);
             }
 
 
             if (model.animated) {
-                const mixer = new THREE.AnimationMixer(obj);
-                let action = mixer.clipAction(obj.animations[0]).play();
-                action.play();
-                this.mixers.push(mixer);
+                for (let i = 0; i < obj.animations.length; i++) {
+                    const mixer = new THREE.AnimationMixer(obj);
+                    let action = mixer.clipAction(obj.animations[i]).play();
+                    action.play();
+                    this.mixers.push(mixer);
+                }
             }
-
-
-            
         });
 
         // 
     }
+
     /**
      * Configure le rendu WebGL
      */
@@ -181,13 +176,13 @@ export default class MainScene {
             -50,
             100
         );
-/*
-        this.camera = new THREE.PerspectiveCamera(
-            45,
-            aspect,
-            1,
-            1000
-        );*/
+        /*
+                this.camera = new THREE.PerspectiveCamera(
+                    45,
+                    aspect,
+                    1,
+                    1000
+                );*/
         this.camera.position.set(14, 15, 15);
         this.camera.lookAt(0, 0, 0);
     }
@@ -240,13 +235,19 @@ export default class MainScene {
      * Boucle de mise à jour pour l'animation
      */
     update() {
+        const delta = this.clock.getDelta();
+
         if (this.controls) {
             this.controls.update();
         }
 
-       /* if (this.interaction) {
-            this.interaction.update();
-        }*/
+        this.mixers.forEach((mixer) => {
+            mixer.update(delta);
+        });
+
+        /* if (this.interaction) {
+             this.interaction.update();
+         }*/
     }
 
     /**
