@@ -9,6 +9,9 @@ import FirebaseListener from "./FirebaseListener.js";
 import {loadModels} from "./loader.js";
 import {modelDescriptors} from "./modelDescriptors.js";
 import {FruitController} from "./fruits/FruitController.js";
+import {setLocation} from "./utils/LocationUtil.js";
+import {setMaterial} from "./utils/MaterialUtil.js";
+import Floor from "./Floor.js";
 
 /**
  * Classe principale qui gère la scène 3D
@@ -47,12 +50,12 @@ export default class MainScene {
                 this.initializeBasicSettings();
                 this.setupRenderer();
                 this.setupCamera();
-                this.setupControls();
+                //this.setupControls();
                 this.setupLights();
+                this.setupFloor();
                 this.createModels();
                 this.setupEventListeners();
                 this.setupGUI();
-                // this.createFloor();
                 this.setupInteraction();
                 this.FirebaseListener = new FirebaseListener(this.buttons);
                 this.render();
@@ -71,28 +74,17 @@ export default class MainScene {
      */
     initializeBasicSettings() {
         this.scene = new THREE.Scene();
-        this.scene.background = new THREE.Color("#f69f46");
 
         this.params = {
-            color: 0xffffff,
-            transmission: 1,
-            opacity: 1,
-            metalness: 0,
-            roughness: 0,
-            ior: 1.5,
-            thickness: 0.01,
-            specularIntensity: 1,
-            specularColor: 0xffffff,
-            envMapIntensity: 1,
-            transparentMaterial: false,
-            isAnimating: false,
-            animationSpeed: 0.005,
-            amplitude: 1.5,
-            phaseOffset: 20,
-            downwardOffset: 1.5,
-            fruitX: 2,
-            fruitY: 3.1,
-            fruitZ: .65
+            spotLightX: 30,
+            spotLightY: 12,
+            spotLightZ: 10,
+            spotLightIntensity: 2000,
+            dirLightX: -8,
+            dirLightY: 50,
+            dirLightZ: 33,
+            dirLightIntensity: 5,
+            ambientLightIntensity: .5,
         };
     }
 
@@ -122,38 +114,12 @@ export default class MainScene {
                 let fruitController = new FruitController(this.scene, model)
                 this.fruitControllers.push(fruitController);
             } else {
-
-
-                let obj = model.object;
-                const pos = model.props.position;
-                const scale = model.props.scale;
-                const rot = model.props.rotation;
-                obj.position.set(pos.x, pos.y, pos.z);
-                obj.scale.set(scale.x, scale.y, scale.z);
-                obj.rotation.set(rot.x, rot.y, rot.z);
-
-                obj.traverse((child) => {
-                    if (child.isMesh) {
-                        if (model.material) child.material = model.material
-                        child.castShadow = true;
-                        child.receiveShadow = true;
-                    }
-                })
-
-                this.scene.add(obj);
-
-                if (model.animated) {
-                    for (let i = 0; i < obj.animations.length; i++) {
-                        const mixer = new THREE.AnimationMixer(obj);
-                        let action = mixer.clipAction(obj.animations[i]).play();
-                        action.play();
-                        this.mixers.push(mixer);
-                    }
-                }
+                let object = model.object;
+                setLocation(model.props, object);
+                setMaterial(model);
+                this.scene.add(object);
             }
         });
-
-        // 
     }
 
     /**
@@ -164,7 +130,7 @@ export default class MainScene {
         this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         this.renderer.shadowMap.enabled = true;
-        this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMap.type = THREE.VSMShadowMap;
         this.renderer.setClearColor("#f0e6e6");
         document.body.appendChild(this.renderer.domElement);
     }
@@ -174,7 +140,7 @@ export default class MainScene {
      */
     setupCamera() {
         const aspect = window.innerWidth / window.innerHeight;
-        const viewSize = 10;
+        const viewSize = 12;
         this.camera = new THREE.OrthographicCamera(
             -viewSize * aspect,
             viewSize * aspect,
@@ -183,15 +149,8 @@ export default class MainScene {
             -50,
             100
         );
-        /*
-                this.camera = new THREE.PerspectiveCamera(
-                    45,
-                    aspect,
-                    1,
-                    1000
-                );*/
-        this.camera.position.set(14, 15, 15);
-        this.camera.lookAt(0, 0, 0);
+        this.camera.position.set(10, 17.5, 10);
+        this.camera.lookAt(0, 7.5, 0)
     }
 
     /**
@@ -213,6 +172,10 @@ export default class MainScene {
         this.lights = new Lights(this.scene);
     }
 
+    setupFloor() {
+        this.floor = new Floor(this.scene);
+    }
+
     /**
      * Configure les écouteurs d'événements
      */
@@ -227,8 +190,9 @@ export default class MainScene {
      * Configure les contrôles GUI
      */
     setupGUI() {
-        this.guiControls = new GuiControls(this.params, () =>
-            this.updateMaterials()
+        this.guiControls = new GuiControls(this.params, () => {
+                this.lights.update(this.params);
+            }
         );
     }
 
@@ -278,7 +242,7 @@ export default class MainScene {
         this.camera.right = viewSize * aspect;
         this.camera.top = viewSize;
         this.camera.bottom = -viewSize;
-        this.camera.updateProjectionMatrix();
+        //this.camera.updateProjectionMatrix();
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
@@ -287,9 +251,7 @@ export default class MainScene {
      * Met à jour les matériaux pour tous les cubes
      */
     updateMaterials() {
-        this.cubes.forEach((cube, index) => {
-            if (!this.params.isAnimating) cube.updateMaterial(this.params, index);
-        });
+
     }
 
     /**

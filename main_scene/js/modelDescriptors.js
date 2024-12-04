@@ -1,9 +1,7 @@
 import {Fruit} from "./fruits/Fruit.js";
 import {materials} from "./materials/Materials.js";
-import * as THREE from "three";
 
 const path = "/models";
-
 
 export const modelDescriptors = [
     {
@@ -13,7 +11,7 @@ export const modelDescriptors = [
         animated: false,
         target: "brown",
         clickable: true,
-        material: materials.glass,
+        material: materials.plate,
         props: {
             scale: {x: 10, y: 10, z: 10},
             position: {x: 0, y: 0, z: 0},
@@ -25,19 +23,19 @@ export const modelDescriptors = [
         fruit: Fruit.PINEAPPLE,
         props: {
             scale: {x: 1, y: 1, z: 1},
-            position: {x: 0, y: 2, z: 0},
-            rotation: {x: 0, y: Math.PI / 2, z: 0},
+            position: {x: -4, y: .5, z: -2},
+            rotation: {x: 0, y: -Math.PI, z: 0},
         },
         models: [
             {
-                src: `${path}/ant_liftingWeights.gltf`,
+                src: `${path}/ant_liftingWeights/ant_liftingWeights.gltf`,
                 id: "ant_liftingWeights",
                 type: "gltf",
                 animated: true,
                 props: {
                     scale: {x: 1.5, y: 1.5, z: 1.5},
-                    position: {x: 0, y: 3.35, z: 0},
-                    rotation: {x: 0, y: -Math.PI / 2, z: 0},
+                    position: {x: -1, y: 3.35, z: 0},
+                    rotation: {x: 0, y: Math.PI, z: 0},
                 },
             },
             {

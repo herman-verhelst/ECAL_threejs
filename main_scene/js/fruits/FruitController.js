@@ -1,6 +1,8 @@
 import * as THREE from "three";
 import {FruitElement} from "./FruitElement.js";
 import {gsap} from "gsap";
+import {setLocation} from "../utils/LocationUtil.js";
+import {setMaterial} from "../utils/MaterialUtil.js";
 
 export class FruitController {
 
@@ -25,7 +27,7 @@ export class FruitController {
 
         this.group = new THREE.Object3D();
 
-        this.setLocation(model.props, this.group);
+        setLocation(model.props, this.group);
 
         this.scene.add(this.group)
 
@@ -75,14 +77,8 @@ export class FruitController {
 
     addElement(model) {
         let object = model.object
-        this.setLocation(model.props, object);
-
-        object.traverse((child) => {
-            if (child.isMesh) {
-                child.castShadow = true;
-                child.receiveShadow = true;
-            }
-        });
+        setLocation(model.props, object);
+        setMaterial(model);
 
         if (model.animated) {
             for (let i = 0; i < model.animation.length; i++) {
@@ -95,15 +91,5 @@ export class FruitController {
         this.group.add(object);
 
         return model;
-    }
-
-    setLocation(props, threeJsObject) {
-        const position = props.position;
-        const scale = props.scale;
-        const rotation = props.rotation;
-
-        threeJsObject.position.set(position.x, position.y, position.z)
-        threeJsObject.scale.set(scale.x, scale.y, scale.z)
-        threeJsObject.rotation.set(rotation.x, rotation.y, rotation.z)
     }
 }

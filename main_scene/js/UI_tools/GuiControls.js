@@ -21,84 +21,45 @@ export default class GuiControls {
    * Configure tous les contrôles de l'interface
    */
   setupControls() {
-    // Sélecteur du type de matériau
-    // const materialTypeFolder = this.gui.addFolder("Material Type");
-    // materialTypeFolder
-    //   .add(this.params, "transparentMaterial")
-    //   .name("Use Transparent Material")
-    //   .onChange(() => this.updateCallback());
-    // materialTypeFolder.open();
 
-    // Propriétés du matériau transparent
-    const transparentMaterialFolder = this.gui.addFolder(
-      "Transparent Material Properties"
+    const lightProperties = this.gui.addFolder(
+        "Light Properties"
     );
-    transparentMaterialFolder
-      .addColor(this.params, "color")
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "transmission", 0, 1)
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "opacity", 0, 1)
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "metalness", 0, 1)
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "roughness", 0, 1)
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "ior", 1, 2.333)
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "thickness", 0, 5)
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "specularIntensity", 0, 1)
-      .onChange(() => this.updateCallback());
-    transparentMaterialFolder
-      .add(this.params, "envMapIntensity", 0, 3)
-      .onChange(() => this.updateCallback());
+    lightProperties
+        .add(this.params, "spotLightX", -20, 50)
+        .onChange(() => this.lightPropertiesUpdate());
 
+    lightProperties
+        .add(this.params, "spotLightY", -20, 50)
+        .onChange(() => this.lightPropertiesUpdate());
 
-    const fruitControllerFolder = this.gui.addFolder(
-        "Fruit Controller Properties"
-    );
-    fruitControllerFolder
-        .add(this.params, "fruitX", -10, 10)
-        .onChange(() => this.fruitControllerUpdate());
+    lightProperties
+        .add(this.params, "spotLightZ", -20, 50)
+        .onChange(() => this.lightPropertiesUpdate());
 
-    fruitControllerFolder
-        .add(this.params, "fruitY", -10, 10)
-        .onChange(() => this.fruitControllerUpdate());
+    lightProperties
+        .add(this.params, "spotLightIntensity", 0, 2000)
+        .onChange(() => this.lightPropertiesUpdate());
 
-    fruitControllerFolder
-        .add(this.params, "fruitZ", -10, 10)
-        .onChange(() => this.fruitControllerUpdate());
-    // // Contrôles de l'animation de vague
-    // const animationFolder = this.gui.addFolder("Wave Animation");
-    // animationFolder
-    //   .add(this.params, "isAnimating")
-    //   .name("Animation On/Off")
-    //   .onChange(() => this.updateCallback());
-    // animationFolder
-    //   .add(this.params, "animationSpeed", 0.001, 0.01)
-    //   .name("Wave Speed")
-    //   .onChange(() => this.updateCallback());
-    // animationFolder
-    //   .add(this.params, "amplitude", 0, 3)
-    //   .name("Wave Height")
-    //   .onChange(() => this.updateCallback());
-    // animationFolder
-    //   .add(this.params, "downwardOffset", 0, 3)
-    //   .name("Wave Depth")
-    //   .onChange(() => this.updateCallback());
-    // animationFolder
-    //   .add(this.params, "phaseOffset", 0, 50)
-    //   .name("Wave Offset")
-    //   .onChange(() => this.updateCallback());
-    // animationFolder.open();
+    lightProperties
+        .add(this.params, "dirLightX", -20, 50)
+        .onChange(() => this.lightPropertiesUpdate());
+
+    lightProperties
+        .add(this.params, "dirLightY", -20, 50)
+        .onChange(() => this.lightPropertiesUpdate());
+
+    lightProperties
+        .add(this.params, "dirLightZ", -20, 50)
+        .onChange(() => this.lightPropertiesUpdate());
+
+    lightProperties
+        .add(this.params, "dirLightIntensity", 0, 10)
+        .onChange(() => this.lightPropertiesUpdate());
+
+    lightProperties
+        .add(this.params, "ambientLightIntensity", 0, 10)
+        .onChange(() => this.lightPropertiesUpdate());
   }
 
   /**
@@ -110,7 +71,8 @@ export default class GuiControls {
     this.gui.updateDisplay();
   }
 
-  fruitControllerUpdate(newParams) {
+  lightPropertiesUpdate(newParams) {
+    this.updateCallback();
     Object.assign(this.params, newParams);
     this.gui.updateDisplay();
   }

@@ -13,5 +13,11 @@ export const materials = {
         refractionRatio: 0.985,
         ior: 0.9,
         side: THREE.BackSide,
+    }),
+    floor: new THREE.MeshStandardMaterial({
+        color: '#e6810b',
+    }),
+    plate: new THREE.MeshStandardMaterial({
+        color: '#edc493',
     })
 }
