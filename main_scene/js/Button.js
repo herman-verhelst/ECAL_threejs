@@ -18,7 +18,7 @@ export default class Button  {
         if (this.clickable) {
             this.isPressed = !this.isPressed;
 
-            if (this.isPressed) gsap.to(this.mesh.position, {y: 1, duration: .05})
+            if (this.isPressed) gsap.to(this.mesh.position, {y: .5, duration: .05})
             else gsap.to(this.mesh.position, {y: 1.1, duration: .05})
 
             FirebaseConfig.sendData("connections_orange/" + FirebaseConfig.UID, {

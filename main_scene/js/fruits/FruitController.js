@@ -3,6 +3,7 @@ import {FruitElement} from "./FruitElement.js";
 import {gsap} from "gsap";
 import {setLocation} from "../utils/LocationUtil.js";
 import {setMaterialOnLoadedModels} from "../utils/MaterialUtil.js";
+import {Car} from "../animations/Car.js";
 
 export class FruitController {
 
@@ -14,6 +15,7 @@ export class FruitController {
     isAnimating;
     uid;
 
+    car;
     elements = [];
     mixers = [];
     actions = [];
@@ -52,8 +54,14 @@ export class FruitController {
         });
 
         this.elements.forEach((element) => {
+            if (element.object.isWeight) {
+                console.log('weight')
+                gsap.to(element.object.object.position, {y: 4.4, duration: .2, delay: 3, ease: 'power1.in'})
+            }
             if (!element.object.rotationAnimation) return;
-            gsap.to(element.object.object.rotation, {z: -Math.PI / 2})
+            const rotationAxis = element.object.rotationAxis;
+            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {z: -Math.PI / 2})
+            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {x: -Math.PI / 2})
         })
     }
 
@@ -72,6 +80,8 @@ export class FruitController {
 
     tick() {
         const delta = this.clock.getDelta();
+
+        if (this.car) this.car.animate();
 
         this.mixers.forEach((mixer) => {
             mixer.update(delta);

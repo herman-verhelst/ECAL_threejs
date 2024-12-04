@@ -31,16 +31,17 @@ export default class MainScene {
 
         this.meshes = [];
         this.mixers = [];
+
         this.clock = new THREE.Clock();
         this.arrayModels = modelDescriptors;
 
         this.buttons = [];
         this.init();
 
-        window.addEventListener('mousedown', () => {
+        window.addEventListener('keydown', (e) => {
             this.fruitControllers.forEach((fruitController) => {
                 //if (!fruitController.isAnimating) fruitController.startAnimation();
-                //else fruitController.endAnimation();
+                if (e.key === 'Enter') fruitController.startAnimation();
             })
         })
     }
@@ -105,7 +106,7 @@ export default class MainScene {
 
             let cube = new THREE.Mesh();
             cube.geometry = new RoundedBoxGeometry(1, 1, 1, 3, .05);
-            cube.scale.set(1.5, .5, 1.5);
+            cube.scale.set(1.5, 1, 1.5);
             cube.rotation.set(0, 0, 0);
             cube.position.set(position.x, position.y, position.z);
             setMaterial(cube, materials.button);
@@ -161,7 +162,7 @@ export default class MainScene {
      */
     setupCamera() {
         const aspect = window.innerWidth / window.innerHeight;
-        const viewSize = 12;
+        const viewSize = 8;
         this.camera = new THREE.OrthographicCamera(
             -viewSize * aspect,
             viewSize * aspect,
@@ -170,8 +171,8 @@ export default class MainScene {
             -50,
             100
         );
-        this.camera.position.set(10, 17.5, 10);
-        this.camera.lookAt(0, 7.5, 0)
+        this.camera.position.set(10, 13, 10);
+        this.camera.lookAt(0, 3, 0)
     }
 
     /**
