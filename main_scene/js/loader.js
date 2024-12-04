@@ -31,9 +31,6 @@ export const loadModel = (model) => {
 }
 
 function processPromises(structure) {
-    console.log(structure.type)
-    console.log(structure)
-
     if (structure.type && structure.type === 'fruit') {
         // If it's an array, map through the elements and process each one
         return Promise
@@ -62,8 +59,8 @@ export const loadGLTF = (model) => {
             model.src,
             (object) => {
                 console.log("✅", model.id, "model loaded");
-                console.log(object)
-                resolve({...model, object, animation: object.animations});
+                console.log(object.animations)
+                resolve({...model, object: object.scene, animation: object.animations});
             },
             (xhr) => {
             },

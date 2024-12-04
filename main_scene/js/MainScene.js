@@ -1,10 +1,7 @@
 import * as THREE from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls.js";
-import ButtonCube from "./shapes/ButtonCube.js";
-import RemoteCube from "./shapes/RemoteCube.js";
 import GuiControls from "./UI_tools/GuiControls.js";
 import Lights from "./Lights.js";
-import Floor from "./Floor.js";
 import Interaction from "./Interaction.js";
 import {RoundedBoxGeometry} from "three/examples/jsm/geometries/RoundedBoxGeometry.js";
 import FirebaseConfig from "./FirebaseConfig.js";
@@ -124,8 +121,9 @@ export default class MainScene {
             if (model.type === 'fruit') {
                 let fruitController = new FruitController(this.scene, model)
                 this.fruitControllers.push(fruitController);
-
             } else {
+
+
                 let obj = model.object;
                 const pos = model.props.position;
                 const scale = model.props.scale;
@@ -136,20 +134,13 @@ export default class MainScene {
 
                 obj.traverse((child) => {
                     if (child.isMesh) {
+                        if (model.material) child.material = model.material
                         child.castShadow = true;
                         child.receiveShadow = true;
                     }
                 })
 
                 this.scene.add(obj);
-
-                if (model.clickable) {
-                    const button = new ButtonCube({mesh: obj, model: model, ...model});
-                    this.buttons.push(button);
-
-                } else {
-                    this.meshes.push(obj);
-                }
 
                 if (model.animated) {
                     for (let i = 0; i < obj.animations.length; i++) {

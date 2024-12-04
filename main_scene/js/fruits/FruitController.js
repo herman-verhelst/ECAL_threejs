@@ -48,7 +48,7 @@ export class FruitController {
 
         this.elements.forEach((element) => {
             if (!element.object.rotationAnimation) return;
-            gsap.to(element.object.object.scene.rotation, {z: -Math.PI / 2})
+            gsap.to(element.object.object.rotation, {z: -Math.PI / 2})
         })
     }
 
@@ -61,7 +61,7 @@ export class FruitController {
 
         this.elements.forEach((element) => {
             if (!element.object.rotationAnimation) return;
-            gsap.to(element.object.object.scene.rotation, {z: 0})
+            gsap.to(element.object.object.rotation, {z: 0})
         })
     }
 
@@ -74,7 +74,7 @@ export class FruitController {
     }
 
     addElement(model) {
-        let object = model.object.scene
+        let object = model.object
         this.setLocation(model.props, object);
 
         object.traverse((child) => {
@@ -85,10 +85,10 @@ export class FruitController {
         });
 
         if (model.animated) {
-            for (let i = 0; i < model.object.animations.length; i++) {
+            for (let i = 0; i < model.animation.length; i++) {
                 const mixer = new THREE.AnimationMixer(object);
                 this.mixers.push(mixer);
-                this.actions.push(mixer.clipAction(model.object.animations[i]))
+                this.actions.push(mixer.clipAction(model.animation[i]))
             }
         }
 

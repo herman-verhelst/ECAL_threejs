@@ -1,18 +1,22 @@
 import {Fruit} from "./fruits/Fruit.js";
+import {materials} from "./materials/Materials.js";
+import * as THREE from "three";
 
 const path = "/models";
 
+
 export const modelDescriptors = [
     {
-        src: `${path}/fruitbowl/model.obj`,
+        src: `${path}/fruitbowl/fruitbowl.gltf`,
         id: "fruitbowl",
-        type: "obj",
+        type: "gltf",
         animated: false,
         target: "brown",
         clickable: true,
+        material: materials.glass,
         props: {
             scale: {x: 10, y: 10, z: 10},
-            position: {x: 0, y: -5, z: 0},
+            position: {x: 0, y: 0, z: 0},
             rotation: {x: 0, y: 0, z: 0},
         },
     },
