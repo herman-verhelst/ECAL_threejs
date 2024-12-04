@@ -61,6 +61,21 @@ export default class GuiControls {
       .add(this.params, "envMapIntensity", 0, 3)
       .onChange(() => this.updateCallback());
 
+
+    const fruitControllerFolder = this.gui.addFolder(
+        "Fruit Controller Properties"
+    );
+    fruitControllerFolder
+        .add(this.params, "fruitX", -10, 10)
+        .onChange(() => this.fruitControllerUpdate());
+
+    fruitControllerFolder
+        .add(this.params, "fruitY", -10, 10)
+        .onChange(() => this.fruitControllerUpdate());
+
+    fruitControllerFolder
+        .add(this.params, "fruitZ", -10, 10)
+        .onChange(() => this.fruitControllerUpdate());
     // // Contrôles de l'animation de vague
     // const animationFolder = this.gui.addFolder("Wave Animation");
     // animationFolder
@@ -91,6 +106,11 @@ export default class GuiControls {
    * @param {Object} newParams - Nouveaux paramètres à appliquer
    */
   updateParams(newParams) {
+    Object.assign(this.params, newParams);
+    this.gui.updateDisplay();
+  }
+
+  fruitControllerUpdate(newParams) {
     Object.assign(this.params, newParams);
     this.gui.updateDisplay();
   }

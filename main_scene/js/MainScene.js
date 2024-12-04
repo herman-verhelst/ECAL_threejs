@@ -11,6 +11,7 @@ import FirebaseConfig from "./FirebaseConfig.js";
 import FirebaseListener from "./FirebaseListener.js";
 import {loadModels} from "./loader.js";
 import {modelDescriptors} from "./modelDescriptors.js";
+import {FruitController} from "./fruits/FruitController.js";
 
 /**
  * Classe principale qui gère la scène 3D
@@ -24,6 +25,8 @@ export default class MainScene {
         // Le constructeur ne peut pas être async, on délègue l'init
 
         this.models = [];
+        this.fruitControllers = [];
+
         this.meshes = [];
         this.mixers = [];
         this.clock = new THREE.Clock();
@@ -31,6 +34,12 @@ export default class MainScene {
 
         this.buttons = [];
         this.init();
+
+        window.addEventListener('mousedown', () => {
+            this.fruitControllers.forEach((fruitController) => {
+                fruitController.startAnimation();
+            })
+        })
     }
 
     async init() {
@@ -83,11 +92,13 @@ export default class MainScene {
             amplitude: 1.5,
             phaseOffset: 20,
             downwardOffset: 1.5,
+            fruitX: 2,
+            fruitY: 3.1,
+            fruitZ: .65
         };
     }
 
-    createModels() {
-
+    createButtons() {
         this.cube = new THREE.Mesh()
         this.cube.geometry = new RoundedBoxGeometry(1, 1, 1, 0.1, 2);
         this.cube.material = new THREE.MeshStandardMaterial({
@@ -100,48 +111,54 @@ export default class MainScene {
         this.cube.position.set(10, 10, 0);
         this.cube.scale.set(1, 1, 1);
         this.cube.rotation.set(0, 0, 0);
+    }
+
+    createModels() {
+        this.createButtons();
 
         this.scene.add(this.cube);
         this.meshes.push(this.cube);
 
         this.models.forEach((model) => {
-            let obj = model.object;
-            const pos = model.props.position;
-            const scale = model.props.scale;
-            const rot = model.props.rotation;
-            obj.position.set(pos.x, pos.y, pos.z);
-            obj.scale.set(scale.x, scale.y, scale.z);
-            obj.rotation.set(rot.x, rot.y, rot.z);
+            if (model.type === 'fruit') {
+                console.log('fruit')
 
-            let material = new THREE.MeshStandardMaterial({
-                color: 0xffffff,
-            })
-
-            obj.traverse((child) => {
-                if (child.isMesh) {
-                    child.material = material;
-                    child.castShadow = true;
-                    child.receiveShadow = true;
-                }
-            })
-
-
-            this.scene.add(obj);
-            if (model.clickable) {
-                const button = new ButtonCube({mesh: obj, model: model, ...model});
-                this.buttons.push(button);
+                let fruitController = new FruitController(this.scene, model)
+                this.fruitControllers.push(fruitController);
 
             } else {
-                this.meshes.push(obj);
-            }
+                let obj = model.object;
+                const pos = model.props.position;
+                const scale = model.props.scale;
+                const rot = model.props.rotation;
+                obj.position.set(pos.x, pos.y, pos.z);
+                obj.scale.set(scale.x, scale.y, scale.z);
+                obj.rotation.set(rot.x, rot.y, rot.z);
 
+                obj.traverse((child) => {
+                    if (child.isMesh) {
+                        child.castShadow = true;
+                        child.receiveShadow = true;
+                    }
+                })
 
-            if (model.animated) {
-                for (let i = 0; i < obj.animations.length; i++) {
-                    const mixer = new THREE.AnimationMixer(obj);
-                    let action = mixer.clipAction(obj.animations[i]).play();
-                    action.play();
-                    this.mixers.push(mixer);
+                this.scene.add(obj);
+
+                if (model.clickable) {
+                    const button = new ButtonCube({mesh: obj, model: model, ...model});
+                    this.buttons.push(button);
+
+                } else {
+                    this.meshes.push(obj);
+                }
+
+                if (model.animated) {
+                    for (let i = 0; i < obj.animations.length; i++) {
+                        const mixer = new THREE.AnimationMixer(obj);
+                        let action = mixer.clipAction(obj.animations[i]).play();
+                        action.play();
+                        this.mixers.push(mixer);
+                    }
                 }
             }
         });
@@ -213,6 +230,7 @@ export default class MainScene {
         this.onResize = this.onResize.bind(this);
         this.render = this.render.bind(this);
         window.addEventListener("resize", this.onResize);
+
     }
 
     /**
@@ -245,9 +263,9 @@ export default class MainScene {
             mixer.update(delta);
         });
 
-        /* if (this.interaction) {
-             this.interaction.update();
-         }*/
+        this.fruitControllers.forEach((fruitController) => {
+            fruitController.tick();
+        })
     }
 
     /**
