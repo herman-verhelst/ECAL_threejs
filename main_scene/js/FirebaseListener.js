@@ -61,7 +61,7 @@ export default class FirebaseListener {
     if (entry.target === FirebaseConfig.UID) {
       this.shapes.forEach((shape) => {
         if (this.shouldActivateShape(shape, key, entry)) {
-          shape.activate();
+          shape.startAnimation();
         }
       });
     }
@@ -75,10 +75,10 @@ export default class FirebaseListener {
    * @returns {boolean} - Vrai si le shape doit être activé
    */
   shouldActivateShape(shape, key, entry) {
-    if (shape.uid !== key || shape.clickable) return false;
+    if (shape.uid !== key) return false;
 
     // Vérifie si un changement d'état est nécessaire
-    return !(
+    return (
       (shape.isPressed && entry.position === "up") ||
       (!shape.isPressed && entry.position === "down")
     );

@@ -9,8 +9,6 @@ export const modelDescriptors = [
         id: "fruitbowl",
         type: "gltf",
         animated: false,
-        target: "brown",
-        clickable: true,
         material: materials.plate,
         props: {
             scale: {x: 10, y: 10, z: 10},
@@ -19,8 +17,22 @@ export const modelDescriptors = [
         },
     },
     {
+        src: `${path}/buttons/buttons.gltf`,
+        id: "button",
+        type: "gltf",
+        animated: false,
+        mirrored: true,
+        material: materials.plate,
+        props: {
+            scale: {x: 1, y: 1, z: 1},
+            position: {x: -5, y: 0.75, z: 10},
+            rotation: {x: 0, y: -Math.PI / 2, z: 0},
+        },
+    },
+    {
         type: 'fruit',
         fruit: Fruit.PINEAPPLE,
+        uid: 'pink',
         props: {
             scale: {x: 1, y: 1, z: 1},
             position: {x: -4, y: .5, z: -2},

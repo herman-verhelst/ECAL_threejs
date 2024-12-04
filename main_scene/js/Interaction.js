@@ -49,10 +49,7 @@ export default class Interaction {
       }
     });
 
-
-
     const intersects = this.raycaster.intersectObjects(meshes);
-    console.log("intersects", intersects);
 
     // Vérifie si un cube a été touché
     if (intersects.length > 0) {
@@ -64,7 +61,6 @@ export default class Interaction {
           return button.mesh === intersects[0].object;
         }
       });
-
 
       if (clickedButton) {
         clickedButton.togglePress();

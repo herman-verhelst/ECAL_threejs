@@ -21,8 +21,6 @@ export const loadModel = (model) => {
         case "obj":
             return loadOBJ(model);
         case "fruit":
-            //const fruit = model.models.map((model) => loadModel(model));
-            //console.log(fruit)
             return loadFruit(model);
         default:
             return Promise.reject(new Error("Invalid model type"));
@@ -59,7 +57,6 @@ export const loadGLTF = (model) => {
             model.src,
             (object) => {
                 console.log("✅", model.id, "model loaded");
-                console.log(object.animations)
                 resolve({...model, object: object.scene, animation: object.animations});
             },
             (xhr) => {

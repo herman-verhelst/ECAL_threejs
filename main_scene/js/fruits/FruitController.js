@@ -2,7 +2,7 @@ import * as THREE from "three";
 import {FruitElement} from "./FruitElement.js";
 import {gsap} from "gsap";
 import {setLocation} from "../utils/LocationUtil.js";
-import {setMaterial} from "../utils/MaterialUtil.js";
+import {setMaterialOnLoadedModels} from "../utils/MaterialUtil.js";
 
 export class FruitController {
 
@@ -12,6 +12,7 @@ export class FruitController {
     group;
 
     isAnimating;
+    uid;
 
     elements = [];
     mixers = [];
@@ -24,6 +25,7 @@ export class FruitController {
     ) {
         this.scene = scene;
         this.clock = new THREE.Clock();
+        this.uid = model.uid;
 
         this.group = new THREE.Object3D();
 
@@ -45,6 +47,7 @@ export class FruitController {
 
         this.actions.forEach((action) => {
             action.startAt(0);
+            action.setLoop(THREE.LoopOnce)
             action.play();
         });
 
@@ -78,7 +81,7 @@ export class FruitController {
     addElement(model) {
         let object = model.object
         setLocation(model.props, object);
-        setMaterial(model);
+        setMaterialOnLoadedModels(model);
 
         if (model.animated) {
             for (let i = 0; i < model.animation.length; i++) {

@@ -1,11 +1,15 @@
-export function setMaterial(model) {
+export function setMaterialOnLoadedModels(model) {
     model.object.traverse((child) => {
         if (child.isMesh) {
-            if (model.material) {
-                child.material = model.material
-            }
-            child.castShadow = true;
-            child.receiveShadow = true;
+           setMaterial(child, model.material)
         }
     });
+}
+
+export function setMaterial(model, material = undefined) {
+    if (material) {
+        model.material = material
+    }
+    model.castShadow = true;
+    model.receiveShadow = true;
 }
