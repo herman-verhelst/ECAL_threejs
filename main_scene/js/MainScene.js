@@ -37,7 +37,8 @@ export default class MainScene {
 
         window.addEventListener('mousedown', () => {
             this.fruitControllers.forEach((fruitController) => {
-                fruitController.startAnimation();
+                if (!fruitController.isAnimating) fruitController.startAnimation();
+                else fruitController.endAnimation();
             })
         })
     }
@@ -121,8 +122,6 @@ export default class MainScene {
 
         this.models.forEach((model) => {
             if (model.type === 'fruit') {
-                console.log('fruit')
-
                 let fruitController = new FruitController(this.scene, model)
                 this.fruitControllers.push(fruitController);
 

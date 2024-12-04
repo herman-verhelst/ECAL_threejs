@@ -24,7 +24,6 @@ export class FruitController {
         this.clock = new THREE.Clock();
 
         this.group = new THREE.Object3D();
-        console.log(model.props)
 
         this.setLocation(model.props, this.group);
 
@@ -37,17 +36,32 @@ export class FruitController {
             this.addElement(model);
             return new FruitElement(model);
         })
-        console.log(this.elements)
     }
 
     startAnimation() {
+        this.isAnimating = true;
+
         this.actions.forEach((action) => {
+            action.startAt(0);
             action.play();
         });
+
         this.elements.forEach((element) => {
             if (!element.object.rotationAnimation) return;
-
             gsap.to(element.object.object.scene.rotation, {z: -Math.PI / 2})
+        })
+    }
+
+    endAnimation() {
+        this.isAnimating = false;
+
+        this.actions.forEach((action) => {
+            action.stop();
+        });
+
+        this.elements.forEach((element) => {
+            if (!element.object.rotationAnimation) return;
+            gsap.to(element.object.object.scene.rotation, {z: 0})
         })
     }
 
@@ -68,7 +82,7 @@ export class FruitController {
                 child.castShadow = true;
                 child.receiveShadow = true;
             }
-        })
+        });
 
         if (model.animated) {
             for (let i = 0; i < model.object.animations.length; i++) {
