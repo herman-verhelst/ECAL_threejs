@@ -10,8 +10,10 @@ import {loadModels} from "./loader.js";
 import {modelDescriptors} from "./modelDescriptors.js";
 import {FruitController} from "./fruits/FruitController.js";
 import {setLocation} from "./utils/LocationUtil.js";
-import {setMaterial} from "./utils/MaterialUtil.js";
+import {setMaterial, setMaterialOnLoadedModels} from "./utils/MaterialUtil.js";
 import Floor from "./Floor.js";
+import {materials} from "./materials/Materials.js";
+import Button from "./Button.js";
 
 /**
  * Classe principale qui gère la scène 3D
@@ -37,8 +39,8 @@ export default class MainScene {
 
         window.addEventListener('mousedown', () => {
             this.fruitControllers.forEach((fruitController) => {
-                if (!fruitController.isAnimating) fruitController.startAnimation();
-                else fruitController.endAnimation();
+                //if (!fruitController.isAnimating) fruitController.startAnimation();
+                //else fruitController.endAnimation();
             })
         })
     }
@@ -57,7 +59,7 @@ export default class MainScene {
                 this.setupEventListeners();
                 this.setupGUI();
                 this.setupInteraction();
-                this.FirebaseListener = new FirebaseListener(this.buttons);
+                this.FirebaseListener = new FirebaseListener(this.fruitControllers);
                 this.render();
             });
     }
@@ -89,25 +91,36 @@ export default class MainScene {
     }
 
     createButtons() {
-        this.cube = new THREE.Mesh()
-        this.cube.geometry = new RoundedBoxGeometry(1, 1, 1, 0.1, 2);
-        this.cube.material = new THREE.MeshStandardMaterial({
-            color: 0xffffff,
-        });
+        let cubePositions = [
+            {x: -5, y: 1.1, z: 12},
+            {x: -5, y: 1.1, z: 10},
+            {x: -3, y: 1.1, z: 10},
+            {x: 12, y: 1.1, z: -5},
+            {x: 10, y: 1.1, z: -5},
+            {x: 10, y: 1.1, z: -3},
+        ]
 
-        this.cube.castShadow = true;
-        this.cube.receiveShadow = true;
+        for (let i = 0; i < cubePositions.length; i++) {
+            const position = cubePositions[i];
 
-        this.cube.position.set(10, 10, 0);
-        this.cube.scale.set(1, 1, 1);
-        this.cube.rotation.set(0, 0, 0);
+            let cube = new THREE.Mesh();
+            cube.geometry = new RoundedBoxGeometry(1, 1, 1, 3, .05);
+            cube.scale.set(1.5, .5, 1.5);
+            cube.rotation.set(0, 0, 0);
+            cube.position.set(position.x, position.y, position.z);
+            setMaterial(cube, materials.button);
+
+            this.scene.add(cube);
+            this.buttons.push(new Button({
+                target: this.otherUIDs[i].uid,
+                mesh: cube,
+                id: 'haha'
+            }));
+        }
     }
 
     createModels() {
         this.createButtons();
-
-        this.scene.add(this.cube);
-        this.meshes.push(this.cube);
 
         this.models.forEach((model) => {
             if (model.type === 'fruit') {
@@ -115,9 +128,17 @@ export default class MainScene {
                 this.fruitControllers.push(fruitController);
             } else {
                 let object = model.object;
+
                 setLocation(model.props, object);
-                setMaterial(model);
+                setMaterialOnLoadedModels(model);
                 this.scene.add(object);
+
+                if (model.mirrored) {
+                    let mirroredObject = model.object.clone();
+                    setLocation(model.props, mirroredObject, true);
+                    setMaterialOnLoadedModels(model);
+                    this.scene.add(mirroredObject);
+                }
             }
         });
     }
@@ -158,11 +179,11 @@ export default class MainScene {
      */
     setupControls() {
         this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-        /*this.controls.enableDamping = true;
+        this.controls.enableDamping = true;
         this.controls.dampingFactor = 0.05;
         this.controls.screenSpacePanning = true;
         this.controls.minDistance = 10;
-        this.controls.maxDistance = 50;*/
+        this.controls.maxDistance = 50;
     }
 
     /**

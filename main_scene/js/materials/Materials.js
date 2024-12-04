@@ -19,5 +19,8 @@ export const materials = {
     }),
     plate: new THREE.MeshStandardMaterial({
         color: '#edc493',
+    }),
+    button: new THREE.MeshStandardMaterial({
+        color: '#302a22',
     })
 }
