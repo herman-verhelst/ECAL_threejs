@@ -61,6 +61,53 @@ export const modelDescriptors = [
                     rotation: {x: 0, y: 0, z: 0},
                 },
             },
-        ]
+        ],
+    },
+
+    
+    {
+        type: 'fruit',
+        fruit: 'CAKI',
+        props: {
+            scale: {x: 0.8, y: 0.8, z: 0.8},
+            position: {x: 2.8, y: 0, z: 0},
+            rotation: {x: 0, y: Math.PI/2, z: 0},
+        },
+        models: [
+            {
+                src: `${path}/ant_Splat/cakiTOP/cakiTOP.gltf`,
+                id: "caki_top",
+                type: "gltf",
+                animated: false,
+                rotationAnimation: true,
+                props: {
+                    scale: {x: 13, y: 13, z: 13},
+                    position: {x: 6.5, y: 3.5, z: .65},
+                    rotation: {x: 0, y: 0, z: 0},
+                },
+            },
+            {
+                src: `${path}/ant_Splat/cakiBOTTOM/cakiBOTTOM.gltf`,
+                id: "caki_bottom",
+                type: "gltf",
+                animated: false,
+                props: {
+                    scale: {x: 13, y: 13, z: 13},
+                    position: {x: 3.3, y: 0, z: 0},
+                    rotation: {x: 0, y: 0, z: 0},
+                },
+            },
+            {
+                src: `${path}/ant_Splat/crashSplat.gltf`,
+                id: "ant_Splat",
+                type: "gltf",
+                animated: true,
+                props: {
+                    scale: {x: .15, y: .15, z: .15},
+                    position: {x: 4.4, y: 4.2, z: -0.5},
+                    rotation: {x: 0, y: Math.PI, z: 0},
+                },
+            },
+        ],
     },
 ];
