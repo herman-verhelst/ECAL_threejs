@@ -241,19 +241,18 @@ export const modelDescriptors = [
 
         ]
     },
-    /*{
+    {
         type: 'fruit',
-        fruit: 'MANDARINE',
+        fruit: Fruit.MANDARINE,
         uid: 'green',
         props: {
             scale: {x: 0.8, y: 0.8, z: 0.8},
             position: {x: 2, y: 0, z: -2},
             rotation: {x: 0, y: 0, z: 0},
         },
-
         models: [
             {
-                src: `${path}/ant_UFO/mandarineTOP/mandarineTOPgltf.gltf`,
+                src: `${path}/ant_UFO/mandarineTOP/mandarineTOP.gltf`,
                 id: "mandarine_TOP",
                 type: "gltf",
                 animated: false,
@@ -287,5 +286,5 @@ export const modelDescriptors = [
                 },
             }
         ],
-    },*/
+    },
 ];
