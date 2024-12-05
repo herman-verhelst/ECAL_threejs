@@ -29,7 +29,7 @@ export const modelDescriptors = [
             rotation: {x: 0, y: -Math.PI / 2, z: 0},
         },
     },
-    {
+   {
         type: 'fruit',
         fruit: Fruit.PINEAPPLE,
         uid: 'yellow',
@@ -40,12 +40,12 @@ export const modelDescriptors = [
         },
         models: [
             {
-                src: `${path}/ant_liftingWeights/ant_liftingWeights.gltf`,
-                id: "ant_liftingWeights",
+                src: `${path}/ant_computer/ant/ant_computer.gltf`,
+                id: "ant_computer",
                 type: "gltf",
                 animated: true,
                 props: {
-                    scale: {x: 1.5, y: 1.5, z: 1.5},
+                    scale: {x: .15, y: .15, z: .15},
                     position: {x: -1, y: 4, z: 0},
                     rotation: {x: 0, y: Math.PI, z: 0},
                 },
@@ -124,12 +124,12 @@ export const modelDescriptors = [
     },
     {
         type: 'fruit',
-        fruit: 'CAKI',
+        fruit: Fruit.KAKI,
         uid: 'red',
         props: {
             scale: {x: 0.8, y: 0.8, z: 0.8},
-            position: {x: 2, y: 0, z: -2},
-            rotation: {x: 0, y: Math.PI / 2, z: 0},
+            position: {x: 4, y: -.5, z: 0},
+            rotation: {x: 0, y: .2, z: 0},
         },
         models: [
             {
@@ -162,7 +162,7 @@ export const modelDescriptors = [
                 animated: true,
                 props: {
                     scale: {x: .15, y: .15, z: .15},
-                    position: {x: 1.1, y: 4.2, z: -0.5},
+                    position: {x: 1.1, y: 3.8, z: -0.5},
                     rotation: {x: 0, y: Math.PI, z: 0},
                 },
             },
@@ -170,12 +170,12 @@ export const modelDescriptors = [
     },
     {
         type: 'fruit',
-        fruit: 'MANGO',
+        fruit: Fruit.MANGO,
         uid: 'red',
         props: {
-            scale: {x: 0.8, y: 0.8, z: 0.8},
-            position: {x: 2, y: 0, z: -2},
-            rotation: {x: 0, y: Math.PI / 2, z: 0},
+            scale: {x: 1, y: 1, z: 1},
+            position: {x: 2, y: 1, z: -6},
+            rotation: {x: .2, y: Math.PI - .75, z: 0},
         },
         models: [
             {
@@ -185,9 +185,9 @@ export const modelDescriptors = [
                 animated: false,
                 rotationAnimation: true,
                 props: {
-                    scale: {x: 20, y: 20, z: 20},
-                    position: {x: 3.7, y: 3.5, z: .25},
-                    rotation: {x: 0, y: .05, z: 0},
+                    scale: {x: 10, y: 10, z: 10},
+                    position: {x:3.8, y: 1.4, z: -.8},
+                    rotation: {x: 0, y: 0, z: 0},
                 },
             },
             {
@@ -196,20 +196,20 @@ export const modelDescriptors = [
                 type: "gltf",
                 animated: false,
                 props: {
-                    scale: {x: 20, y: 20, z: 20},
+                    scale: {x: 10, y: 10, z: 10},
                     position: {x: 0, y: 0, z: 0},
                     rotation: {x: 0, y: 0, z: 0},
                 },
             },
         ],
     },
-    {
+    /*{
         type: 'fruit',
-        fruit: 'ORANGE',
+        fruit: Fruit.ORANGE,
         uid: 'pink',
         props: {
             scale: {x: 0.8, y: 0.8, z: 0.8},
-            position: {x: 2, y: 0, z: -2},
+            position: {x: 0, y: 0, z: 0},
             rotation: {x: 0, y: 0, z: 0},
         },
         models: [
@@ -220,9 +220,9 @@ export const modelDescriptors = [
                 animated: false,
                 rotationAnimation: true,
                 props: {
-                    scale: {x: 20, y: 20, z: 20},
-                    position: {x: 5.7, y: 8.5, z: 4.25},
-                    rotation: {x: 0, y: .05, z: 0},
+                    scale: {x: 1, y: 1, z: 1},
+                    position: {x: 0, y: 1, z: 0},
+                    rotation: {x: 0, y: 0, z: 0},
                 },
             },
             {
@@ -231,11 +231,11 @@ export const modelDescriptors = [
                 type: "gltf",
                 animated: false,
                 props: {
-                    scale: {x: 20, y: 20, z: 20},
-                    position: {x: 4, y: 3, z: 3},
+                    scale: {x: 1, y: 1, z: 1},
+                    position: {x: 0, y: 0, z: 0},
                     rotation: {x: 0, y: 0, z: 0},
                 },
             },
         ],
-    },
+    },*/
 ];

@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v4.2.57",
+		"generator":"Khronos glTF Blender I/O v4.2.70",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -15,7 +15,18 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"Mesh_0.007"
+			"name":"Mesh_0.007",
+			"rotation":[
+				-0.7263943552970886,
+				-0.6868959069252014,
+				-0.0002974697563331574,
+				0.022916438058018684
+			],
+			"scale":[
+				1.027854561805725,
+				1.0916454792022705,
+				1.0552818775177002
+			]
 		}
 	],
 	"materials":[
@@ -137,119 +148,119 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":21898,
+			"count":912,
 			"max":[
-				0.1673475205898285,
-				0.5913931131362915,
-				0.4021066725254059
+				0.1772574633359909,
+				0.0038349393289536238,
+				0.22790494561195374
 			],
 			"min":[
-				-0.021558579057455063,
-				-0.04935149848461151,
-				-0.07564946264028549
+				-0.034504979848861694,
+				-0.6362400054931641,
+				-0.2477528601884842
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":21898,
+			"count":912,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":21898,
+			"count":912,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":21912,
+			"count":3495,
 			"type":"SCALAR"
 		},
 		{
 			"bufferView":4,
 			"componentType":5126,
-			"count":5555,
+			"count":1753,
 			"max":[
-				0.08895754814147949,
-				0.5983177423477173,
-				0.4048350751399994
+				0.09554355591535568,
+				0.011409681290388107,
+				0.2335796058177948
 			],
 			"min":[
-				-0.06210057809948921,
-				-0.046736981719732285,
-				-0.07405342906713486
+				-0.05644448846578598,
+				-0.6260640621185303,
+				-0.24621906876564026
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":5,
 			"componentType":5126,
-			"count":5555,
+			"count":1753,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":6,
 			"componentType":5126,
-			"count":5555,
+			"count":1753,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":7,
 			"componentType":5123,
-			"count":29052,
+			"count":6597,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":262776,
+			"byteLength":10944,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":262776,
-			"byteOffset":262776,
+			"byteLength":10944,
+			"byteOffset":10944,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":175184,
-			"byteOffset":525552,
+			"byteLength":7296,
+			"byteOffset":21888,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":43824,
-			"byteOffset":700736,
+			"byteLength":6990,
+			"byteOffset":29184,
 			"target":34963
 		},
 		{
 			"buffer":0,
-			"byteLength":66660,
-			"byteOffset":744560,
+			"byteLength":21036,
+			"byteOffset":36176,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":66660,
-			"byteOffset":811220,
+			"byteLength":21036,
+			"byteOffset":57212,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":44440,
-			"byteOffset":877880,
+			"byteLength":14024,
+			"byteOffset":78248,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":58104,
-			"byteOffset":922320,
+			"byteLength":13194,
+			"byteOffset":92272,
 			"target":34963
 		}
 	],
@@ -261,7 +272,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":980424,
+			"byteLength":105468,
 			"uri":"mangoTOPgltf.bin"
 		}
 	]
