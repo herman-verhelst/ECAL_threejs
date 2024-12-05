@@ -53,7 +53,7 @@ export default class MainScene {
                 this.initializeBasicSettings();
                 this.setupRenderer();
                 this.setupCamera();
-                this.setupControls();
+                //this.setupControls();
                 this.setupLights();
                 this.setupBloom();
                 this.setupFloor();
@@ -202,8 +202,9 @@ export default class MainScene {
             -50,
             100
         );
-        this.camera.position.set(10, 13, 10);
-        this.camera.lookAt(0, 3, 0)
+        this.camera.position.set(10, 12, 10);
+        this.camera.lookAt(0, 2, 0)
+
     }
 
     /**

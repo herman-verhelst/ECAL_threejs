@@ -30,12 +30,10 @@ export const modelDescriptors = [
             rotation: {x: 0, y: -Math.PI / 2, z: 0},
         },
     },
-
-
     {
         type: 'fruit',
         fruit: Fruit.PINEAPPLE,
-        uid: 'yellow',
+        uid: 'green',
         props: {
             scale: {x: 1, y: 1, z: 1},
             position: {x: -4.5, y: .5, z: -3.4},
@@ -128,7 +126,7 @@ export const modelDescriptors = [
     {
         type: 'fruit',
         fruit: Fruit.KAKI,
-        uid: 'red',
+        uid: 'pink',
         props: {
             scale: {x: 0.8, y: 0.8, z: 0.8},
             position: {x: 4.5, y: -.5, z: -.5},
@@ -223,7 +221,7 @@ export const modelDescriptors = [
     {
         type: 'fruit',
         fruit: Fruit.ORANGE,
-        uid: 'pink',
+        uid: 'orange',
         props: {
             scale: {x: 2, y: 2, z: 2},
             position: {x: 0.3, y: 0, z: 0},
@@ -270,7 +268,7 @@ export const modelDescriptors = [
     {
         type: 'fruit',
         fruit: 'MANDARINE',
-        uid: 'green',
+        uid: 'blue',
         props: {
             scale: {x: 1, y: 1, z: 1},
             position: {x: 4, y: 0, z: 4},
