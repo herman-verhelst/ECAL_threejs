@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v4.2.57",
+		"generator":"Khronos glTF Blender I/O v4.2.70",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -15,18 +15,7 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"mesh.003",
-			"rotation":[
-				0.7071068286895752,
-				0,
-				0,
-				0.7071068286895752
-			],
-			"scale":[
-				44.01509475708008,
-				44.015098571777344,
-				44.015098571777344
-			]
+			"name":"mesh.003"
 		}
 	],
 	"materials":[
@@ -94,7 +83,7 @@
 		},
 		{
 			"mimeType":"image/jpeg",
-			"name":"texgen_0",
+			"name":"texgen_0-1",
 			"uri":"texgen_0-1.jpg"
 		}
 	],
@@ -102,29 +91,29 @@
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":3649,
+			"count":3680,
 			"max":[
-				0.0016160107916221023,
-				0.017934415489435196,
-				0.00033733915188349783
+				0.022471146658062935,
+				1.0431991815567017,
+				1.3687041997909546
 			],
 			"min":[
-				-0.029928170144557953,
-				-0.031228218227624893,
-				-0.0520222969353199
+				-2.30590558052063,
+				-0.2238926887512207,
+				-0.8003882169723511
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":3649,
+			"count":3680,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":3649,
+			"count":3680,
 			"type":"VEC2"
 		},
 		{
@@ -138,14 +127,14 @@
 			"componentType":5126,
 			"count":1301,
 			"max":[
-				0.004168410785496235,
-				0.017503129318356514,
-				0.00047479066415689886
+				0.015955395996570587,
+				0.26717454195022583,
+				1.3091588020324707
 			],
 			"min":[
-				-0.010981615632772446,
-				-0.029897768050432205,
-				-0.052230771631002426
+				-2.343329429626465,
+				-0.30045926570892334,
+				-0.7798717021942139
 			],
 			"type":"VEC3"
 		},
@@ -171,50 +160,50 @@
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":43788,
+			"byteLength":44160,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":43788,
-			"byteOffset":43788,
+			"byteLength":44160,
+			"byteOffset":44160,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":29192,
-			"byteOffset":87576,
+			"byteLength":29440,
+			"byteOffset":88320,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":32118,
-			"byteOffset":116768,
+			"byteOffset":117760,
 			"target":34963
 		},
 		{
 			"buffer":0,
 			"byteLength":15612,
-			"byteOffset":148888,
+			"byteOffset":149880,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":15612,
-			"byteOffset":164500,
+			"byteOffset":165492,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":10408,
-			"byteOffset":180112,
+			"byteOffset":181104,
 			"target":34962
 		},
 		{
 			"buffer":0,
 			"byteLength":9114,
-			"byteOffset":190520,
+			"byteOffset":191512,
 			"target":34963
 		}
 	],
@@ -228,8 +217,8 @@
 	],
 	"buffers":[
 		{
-			"byteLength":199636,
-			"uri":"mandarineTOPgltf.bin"
+			"byteLength":200628,
+			"uri":"mandarineTOP.bin"
 		}
 	]
 }

@@ -4,6 +4,7 @@ import {gsap} from "gsap";
 import {setLocation} from "../utils/LocationUtil.js";
 import {setMaterialOnLoadedModels} from "../utils/MaterialUtil.js";
 import {Car} from "../animations/Car.js";
+import Fire from "../animations/Fire.js";
 
 const gsapDuration = .2;
 
@@ -16,6 +17,8 @@ export class FruitController {
 
     isAnimating;
     uid;
+
+    fire = [];
 
     elements = [];
     mixers = [];
@@ -61,13 +64,35 @@ export class FruitController {
             action.play();
         });
 
+        if (this.fire) {
+            let scales = [.5, 2];
+            let delay = [0,2 ];
+            for (let i = 0; i < this.fire.length; i++) {
+
+                gsap.to(this.fire[i], {
+                    value: scales[i],
+                    delay: delay[i],
+                    duration: 5, onUpdate: () => {
+                        this.fire[i].setScale(this.fire[i].value, this.fire[i].value, this.fire[i].value)
+                    }
+                })
+            }
+        }
+
+
         this.elements.forEach((element) => {
 
             if (!element.object.rotationAnimation) return;
 
             const rotationAxis = element.object.rotationAxis;
-            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {z: -Math.PI / 2, duration: gsapDuration})
-            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {x: -Math.PI / 2, duration: gsapDuration})
+            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {
+                z: -Math.PI / 2 - Math.PI / 4,
+                duration: gsapDuration
+            })
+            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {
+                x: -Math.PI / 2 - Math.PI / 4,
+                duration: gsapDuration
+            })
         })
     }
 
@@ -80,19 +105,44 @@ export class FruitController {
             });
         }, gsapDuration * 1000)
 
+
+        if (this.fire) {
+            for (let i = 0; i < this.fire.length; i++) {
+                gsap.to(this.fire[i], {
+                    value: 0,
+                    duration: .2, onUpdate: () => {
+                        this.fire[i].setScale(this.fire[i].value, this.fire[i].value, this.fire[i].value)
+
+                    }
+                })
+            }
+
+        }
+
+
         this.elements.forEach((element) => {
             if (!element.object.rotationAnimation) return;
 
             const rotationAxis = element.object.rotationAxis;
-            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {z: 0, duration: gsapDuration})
-            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {x: 0, duration: gsapDuration})
+            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {
+                z: 0,
+                duration: gsapDuration
+            })
+            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {
+                x: 0,
+                duration: gsapDuration
+            })
         })
     }
 
     tick() {
         const delta = this.clock.getDelta();
 
-        if (this.car) this.car.animate();
+        if (this.fire) {
+            this.fire.forEach(f => {
+                f.update(performance.now() * .0005)
+            });
+        }
 
         this.mixers.forEach((mixer) => {
             mixer.update(delta);
@@ -110,6 +160,31 @@ export class FruitController {
                 this.mixers.push(mixer);
                 this.actions.push(mixer.clipAction(model.animation[i]))
             }
+        }
+
+        if (model.fire) {
+
+            const firePositions = [
+                new THREE.Vector3(-1.2, .5
+                    ,.65),
+                new THREE.Vector3(0, .1, 1)
+            ];
+
+            for (let i = 0; i < firePositions.length; i++) {
+                let fire = new Fire();
+                fire.setScale(3, 3, 3);
+                const firePosition = new THREE.Vector3(model.props.position.x, model.props.position.y, model.props.position.z)
+                    .add(this.group.position)
+                    .add(firePositions[i]);
+
+                fire.setPosition(firePosition.x, firePosition.y, firePosition.z);
+                fire.setScale(0, 0, 0);
+                this.scene.add(fire.getMesh())
+
+                this.fire.push(fire)
+            }
+
+
         }
 
         this.group.add(object);
