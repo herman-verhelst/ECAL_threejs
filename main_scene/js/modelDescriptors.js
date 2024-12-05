@@ -253,7 +253,7 @@ export const modelDescriptors = [
 
         models: [
             {
-                src: `${path}/ant_Mandarine/mandarineTOP/mandarineTOPgltf.gltf`,
+                src: `${path}/ant_UFO/mandarineTOP/mandarineTOPgltf.gltf`,
                 id: "mandarine_TOP",
                 type: "gltf",
                 animated: false,
@@ -265,7 +265,7 @@ export const modelDescriptors = [
                 },
             },
             {
-                src: `${path}/ant_Mandarine/mandarineBOTTOM/mandarineBOTTOM.gltf`,
+                src: `${path}/ant_UFO/mandarineBOTTOM/mandarineBOTTOM.gltf`,
                 id: "mandarine_BOTTOM",
                 type: "gltf",
                 animated: false,
@@ -273,6 +273,17 @@ export const modelDescriptors = [
                     scale: {x: 20, y: 20, z: 20},
                     position: {x: 4, y: 3, z: 3},
                     rotation: {x: 0, y: 0, z: 0},
+                },
+            },
+            {
+                src: `${path}/ant_UFO/ant_UFO_animation/ant_UFO.gltf`,
+                id: "UFO",
+                type: "gltf",
+                animated: true,
+                props: {
+                    scale: {x: .15, y: .15, z: .15},
+                    position: {x: 1.1, y: 3.8, z: -0.5},
+                    rotation: {x: 0, y: Math.PI, z: 0},
                 },
             }
         ],
