@@ -8,6 +8,8 @@ export default class Button  {
         this.params = params;
         this.uid = params.id;
         this.name = params.name;
+        this.accent = params.accent;
+        this.group = params.group;
         this.target = params.target;
         this.clickable = true;
         this.mesh = params.mesh;
@@ -18,8 +20,14 @@ export default class Button  {
         if (this.clickable) {
             this.isPressed = !this.isPressed;
 
-            if (this.isPressed) gsap.to(this.mesh.position, {y: .5, duration: .05})
-            else gsap.to(this.mesh.position, {y: 1.1, duration: .05})
+            if (this.isPressed) {
+                gsap.to(this.mesh.position, {y: -.2, duration: .05})
+                gsap.to(this.accent.position, {y: .3, duration: .05})
+            }
+            else {
+                gsap.to(this.mesh.position, {y: .3, duration: .05})
+                gsap.to(this.accent.position, {y: .8, duration: .05})
+            }
 
             FirebaseConfig.sendData("connections_orange/" + FirebaseConfig.UID, {
                 uid: this.uid,

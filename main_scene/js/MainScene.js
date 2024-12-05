@@ -10,13 +10,14 @@ import {loadModels} from "./loader.js";
 import {modelDescriptors} from "./modelDescriptors.js";
 import {FruitController} from "./fruits/FruitController.js";
 import {setLocation} from "./utils/LocationUtil.js";
-import {setMaterial, setMaterialOnLoadedModels} from "./utils/MaterialUtil.js";
+import {setEmissiveMaterial, setMaterial, setMaterialOnLoadedModels} from "./utils/MaterialUtil.js";
 import Floor from "./Floor.js";
 import {materials} from "./materials/Materials.js";
 import Button from "./Button.js";
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import {SphereGeometry} from "three";
 
 
 /**
@@ -52,7 +53,7 @@ export default class MainScene {
                 this.initializeBasicSettings();
                 this.setupRenderer();
                 this.setupCamera();
-                //this.setupControls();
+                this.setupControls();
                 this.setupLights();
                 this.setupBloom();
                 this.setupFloor();
@@ -91,15 +92,7 @@ export default class MainScene {
         };
     }
 
-    createButtons() {
-        let cubePositions = [
-            {x: -5, y: 1.1, z: 12},
-            {x: -5, y: 1.1, z: 10},
-            {x: -3, y: 1.1, z: 10},
-            {x: 12, y: 1.1, z: -5},
-            {x: 10, y: 1.1, z: -5},
-            {x: 10, y: 1.1, z: -3},
-        ]
+    createButtons(cubePositions, group, otherUids) {
 
         for (let i = 0; i < cubePositions.length; i++) {
             const position = cubePositions[i];
@@ -111,35 +104,73 @@ export default class MainScene {
             cube.position.set(position.x, position.y, position.z);
             setMaterial(cube, materials.button);
 
-            this.scene.add(cube);
+            let accent = new THREE.Mesh();
+            accent.geometry = new SphereGeometry(.2, 32, 16);
+            accent.scale.set(1, 1, 1);
+            accent.rotation.set(0, 0, 0);
+            accent.position.set(position.x, position.y + .5, position.z);
+            console.log( otherUids[i].emissiveIntensity)
+            setEmissiveMaterial(accent, otherUids[i].color, otherUids[i].emissiveIntensity);
+
+            group.add(cube, accent);
+            console.log(otherUids[i])
             this.buttons.push(new Button({
-                target: this.otherUIDs[i].uid,
+                target: otherUids[i].uid,
                 mesh: cube,
+                accent: accent,
                 id: 'haha'
             }));
         }
     }
 
     createModels() {
-        this.createButtons();
+        //this.createButtons();
 
         this.models.forEach((model) => {
+            console.log(model.type)
             if (model.type === 'fruit') {
                 let fruitController = new FruitController(this.scene, model)
                 this.fruitControllers.push(fruitController);
-            } else {
+            }
+            else if (model.isButton) {
                 let object = model.object;
 
-                setLocation(model.props, object);
+                const cubePositions = [
+                    {x: 0, y: .3, z: 0},
+                    {x: 2, y: .3, z: 0},
+                    {x: 0, y: .3, z: -2},
+                ]
+
+                let buttonGroup = new THREE.Group();
+                buttonGroup.add(object);
+                console.log(this.otherUIDs.slice(0,3))
+                this.createButtons(cubePositions, buttonGroup, this.otherUIDs.slice(0,3))
+
+                setLocation(model.props, buttonGroup);
                 setMaterialOnLoadedModels(model);
-                this.scene.add(object);
+
+                this.scene.add(buttonGroup);
 
                 if (model.mirrored) {
                     let mirroredObject = model.object.clone();
-                    setLocation(model.props, mirroredObject, true);
+
+                    let buttonGroup = new THREE.Group();
+                    buttonGroup.add(mirroredObject);
+
+                    console.log(this.otherUIDs.slice(0,6))
+                    this.createButtons(cubePositions, buttonGroup, this.otherUIDs.slice(3,6))
+
+                    setLocation(model.props, buttonGroup, true);
                     setMaterialOnLoadedModels(model);
-                    this.scene.add(mirroredObject);
+                    this.scene.add(buttonGroup);
                 }
+            }
+            else {
+                console.log(model)
+                let object = model.object;
+                setLocation(model.props, object);
+                setMaterialOnLoadedModels(model);
+                this.scene.add(object);
             }
         });
     }
@@ -299,14 +330,6 @@ export default class MainScene {
 
         this.renderer.setSize(window.innerWidth, window.innerHeight);
     }
-
-    /**
-     * Met à jour les matériaux pour tous les cubes
-     */
-    updateMaterials() {
-
-    }
-
     /**
      * Nettoie les ressources
      */
@@ -337,6 +360,8 @@ export default class MainScene {
                     name: other.name,
                     uid: other.uid,
                     title: other.title,
+                    color: other.color,
+                    emissiveIntensity: other.emissiveIntensity,
                 }));
             } catch (error) {
                 console.error("Erreur lors du chargement de la configuration:", error);

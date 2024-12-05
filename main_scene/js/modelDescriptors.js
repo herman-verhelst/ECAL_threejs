@@ -22,10 +22,11 @@ export const modelDescriptors = [
         type: "gltf",
         animated: false,
         mirrored: true,
+        isButton: true,
         material: materials.plate,
         props: {
             scale: {x: 1, y: 1, z: 1},
-            position: {x: -5, y: 0.75, z: 10},
+            position: {x: 0, y: 0.75, z: 11},
             rotation: {x: 0, y: -Math.PI / 2, z: 0},
         },
     },
@@ -77,7 +78,6 @@ export const modelDescriptors = [
             },
         ],
     },
-
     {
         type: 'fruit',
         fruit: Fruit.PAPAYA,
@@ -125,8 +125,6 @@ export const modelDescriptors = [
             },
         ],
     },
-
-
     {
         type: 'fruit',
         fruit: Fruit.KAKI,
@@ -173,8 +171,6 @@ export const modelDescriptors = [
             },
         ],
     },
-
-
     {
         type: 'fruit',
         fruit: Fruit.MANGO,
@@ -224,8 +220,6 @@ export const modelDescriptors = [
 
         ],
     },
-
-
     {
         type: 'fruit',
         fruit: Fruit.ORANGE,

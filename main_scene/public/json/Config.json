@@ -5,32 +5,45 @@
     {
       "name": "brikeld-herman",
       "uid": "orange",
-      "title": "snow"
+      "title": "snow",
+      "color": "#e6810b",
+      "emissiveIntensity": "5"
     },
     {
       "name": "laurine-dalia",
       "uid": "green",
-      "title": "flower"
+      "title": "flower",
+      "color": "#38FF38",
+      "emissiveIntensity": "2"
+
     },
     {
       "name": "teo-andreas",
       "uid": "black",
-      "title": "fireworks"
+      "title": "fireworks",
+      "color": "#141415",
+      "emissiveIntensity": "10"
     },
     {
       "name": "shana-daniel",
       "uid": "blue",
-      "title": "snow"
+      "title": "snow",
+      "color": "#057b9f",
+      "emissiveIntensity": "10"
     },
     {
       "name": "steve-yann",
       "uid": "red",
-      "title": "snow"
+      "title": "snow",
+      "color": "#FF3939",
+      "emissiveIntensity": "5"
     },
     {
       "name": "nyria-jonathan",
       "uid": "pink",
-      "title": "fireworks"
+      "title": "fireworks",
+      "color": "#F247E1",
+      "emissiveIntensity": "5"
     }
   ]
 }

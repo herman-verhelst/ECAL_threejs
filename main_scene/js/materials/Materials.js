@@ -22,5 +22,5 @@ export const materials = {
     }),
     button: new THREE.MeshStandardMaterial({
         color: '#302a22',
-    })
+    }),
 }
