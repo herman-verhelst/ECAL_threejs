@@ -14,6 +14,10 @@ import {setMaterial, setMaterialOnLoadedModels} from "./utils/MaterialUtil.js";
 import Floor from "./Floor.js";
 import {materials} from "./materials/Materials.js";
 import Button from "./Button.js";
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+
 
 /**
  * Classe principale qui gère la scène 3D
@@ -55,6 +59,7 @@ export default class MainScene {
                 this.setupCamera();
                 this.setupControls();
                 this.setupLights();
+                this.setupBloom();
                 this.setupFloor();
                 this.createModels();
                 this.setupEventListeners();
@@ -194,6 +199,25 @@ export default class MainScene {
         this.lights = new Lights(this.scene);
     }
 
+    setupBloom() {
+        // EffectComposer for post-processing
+        this.composer = new EffectComposer(this.renderer);
+
+// RenderPass: renders the scene as the first step
+        const renderPass = new RenderPass(this.scene, this.camera);
+        this.composer.addPass(renderPass);
+
+// UnrealBloomPass: adds the bloom effect
+        const bloomPass = new UnrealBloomPass(
+            new THREE.Vector2(window.innerWidth, window.innerHeight), // resolution
+                .5, // strength
+            0.4, // radius
+            0.85 // threshold
+        );
+        this.composer.addPass(bloomPass);
+
+    }
+
     setupFloor() {
         this.floor = new Floor(this.scene);
     }
@@ -250,7 +274,7 @@ export default class MainScene {
     render() {
         requestAnimationFrame(this.render);
         this.update();
-        this.renderer.render(this.scene, this.camera);
+        this.composer.render();
     }
 
     /**

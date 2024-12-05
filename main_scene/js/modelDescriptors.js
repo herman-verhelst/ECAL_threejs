@@ -29,7 +29,7 @@ export const modelDescriptors = [
             rotation: {x: 0, y: -Math.PI / 2, z: 0},
         },
     },
-   {
+    {
         type: 'fruit',
         fruit: Fruit.PINEAPPLE,
         uid: 'yellow',
@@ -81,7 +81,7 @@ export const modelDescriptors = [
         uid: 'black',
         props: {
             scale: {x: 1, y: 1, z: 1},
-            position: {x: -3, y: .5, z: 3},
+            position: {x: -3, y: .5, z: 3.5},
             rotation: {x: 0, y: Math.PI - 2, z: 0},
         },
         models: [
@@ -128,7 +128,7 @@ export const modelDescriptors = [
         uid: 'red',
         props: {
             scale: {x: 0.8, y: 0.8, z: 0.8},
-            position: {x: 4, y: -.5, z: 0},
+            position: {x: 4.5, y: -.5, z: 0},
             rotation: {x: 0, y: .2, z: 0},
         },
         models: [
@@ -186,7 +186,7 @@ export const modelDescriptors = [
                 rotationAnimation: true,
                 props: {
                     scale: {x: 10, y: 10, z: 10},
-                    position: {x:3.8, y: 1.4, z: -.8},
+                    position: {x: 3.8, y: 1.4, z: -.8},
                     rotation: {x: 0, y: 0, z: 0},
                 },
             },
@@ -205,14 +205,14 @@ export const modelDescriptors = [
 
         ],
     },
-    /*{
+    {
         type: 'fruit',
         fruit: Fruit.ORANGE,
         uid: 'pink',
         props: {
-            scale: {x: 0.8, y: 0.8, z: 0.8},
-            position: {x: 0, y: 0, z: 0},
-            rotation: {x: 0, y: 0, z: 0},
+            scale: {x: 2, y: 2, z: 2},
+            position: {x: 0.3, y: 0, z: 0},
+            rotation: {x: 0, y: Math.PI / 2 - .5, z: 0},
         },
         models: [
             {
@@ -223,7 +223,7 @@ export const modelDescriptors = [
                 rotationAnimation: true,
                 props: {
                     scale: {x: 1, y: 1, z: 1},
-                    position: {x: 0, y: 1, z: 0},
+                    position: {x: 1.2, y: 1.4, z: 0},
                     rotation: {x: 0, y: 0, z: 0},
                 },
             },
@@ -239,17 +239,21 @@ export const modelDescriptors = [
                 },
             },
 
-            type = 'fruit',
-            fruit = 'MANDARINE',
-            uid = 'green',
-            props = {
-                scale = {x: 0.8, y: 0.8, z: 0.8},
-                position = {x: 2, y: 0, z: -2},
-                rotation = {x: 0, y: 0, z: 0},
-            },
+        ]
+    },
+    /*{
+        type: 'fruit',
+        fruit: 'MANDARINE',
+        uid: 'green',
+        props: {
+            scale: {x: 0.8, y: 0.8, z: 0.8},
+            position: {x: 2, y: 0, z: -2},
+            rotation: {x: 0, y: 0, z: 0},
+        },
 
-            models = [
-                src: `${path}/ant_Mandarine/mandarineTOP/mandarineTOP.gltf`,
+        models: [
+            {
+                src: `${path}/ant_Mandarine/mandarineTOP/mandarineTOPgltf.gltf`,
                 id: "mandarine_TOP",
                 type: "gltf",
                 animated: false,
@@ -259,7 +263,8 @@ export const modelDescriptors = [
                     position: {x: 5.7, y: 8.5, z: 4.25},
                     rotation: {x: 0, y: .05, z: 0},
                 },
-
+            },
+            {
                 src: `${path}/ant_Mandarine/mandarineBOTTOM/mandarineBOTTOM.gltf`,
                 id: "mandarine_BOTTOM",
                 type: "gltf",
@@ -269,7 +274,7 @@ export const modelDescriptors = [
                     position: {x: 4, y: 3, z: 3},
                     rotation: {x: 0, y: 0, z: 0},
                 },
-                
+            }
         ],
     },*/
 ];

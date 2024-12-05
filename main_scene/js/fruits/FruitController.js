@@ -17,7 +17,6 @@ export class FruitController {
     isAnimating;
     uid;
 
-    car;
     elements = [];
     mixers = [];
     actions = [];
