@@ -61,7 +61,7 @@ export default class FirebaseListener {
     if (entry.target === FirebaseConfig.UID) {
       this.shapes.forEach((shape) => {
         if (this.shouldActivateShape(shape, key, entry)) {
-          shape.startAnimation();
+          shape.animate();
         }
       });
     }

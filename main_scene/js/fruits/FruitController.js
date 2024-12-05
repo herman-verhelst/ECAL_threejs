@@ -5,6 +5,8 @@ import {setLocation} from "../utils/LocationUtil.js";
 import {setMaterialOnLoadedModels} from "../utils/MaterialUtil.js";
 import {Car} from "../animations/Car.js";
 
+const gsapDuration = .2;
+
 export class FruitController {
 
     scene;
@@ -44,37 +46,47 @@ export class FruitController {
         })
     }
 
+    animate() {
+        this.isAnimating = !this.isAnimating;
+        if (this.isAnimating) this.startAnimation();
+        else this.endAnimation();
+    }
+
     startAnimation() {
-        this.isAnimating = true;
 
         this.actions.forEach((action) => {
-            action.startAt(0);
-            action.setLoop(THREE.LoopOnce)
+            action.reset();
+            action.setLoop(THREE.LoopOnce, 0)
+            action.clampWhenFinished = true;
+
             action.play();
         });
 
         this.elements.forEach((element) => {
-            if (element.object.isWeight) {
-                console.log('weight')
-                gsap.to(element.object.object.position, {y: 4.4, duration: .2, delay: 3, ease: 'power1.in'})
-            }
+
             if (!element.object.rotationAnimation) return;
+
             const rotationAxis = element.object.rotationAxis;
-            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {z: -Math.PI / 2})
-            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {x: -Math.PI / 2})
+            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {z: -Math.PI / 2, duration: gsapDuration})
+            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {x: -Math.PI / 2, duration: gsapDuration})
         })
     }
 
     endAnimation() {
         this.isAnimating = false;
 
-        this.actions.forEach((action) => {
-            action.stop();
-        });
+        setTimeout(() => {
+            this.actions.forEach((action) => {
+                action.stop();
+            });
+        }, gsapDuration * 1000)
 
         this.elements.forEach((element) => {
             if (!element.object.rotationAnimation) return;
-            gsap.to(element.object.object.rotation, {z: 0})
+
+            const rotationAxis = element.object.rotationAxis;
+            if (!rotationAxis || rotationAxis === 'z') gsap.to(element.object.object.rotation, {z: 0, duration: gsapDuration})
+            else if (!rotationAxis || rotationAxis === 'x') gsap.to(element.object.object.rotation, {x: 0, duration: gsapDuration})
         })
     }
 

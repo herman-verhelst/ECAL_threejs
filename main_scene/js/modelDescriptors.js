@@ -86,14 +86,14 @@ export const modelDescriptors = [
         },
         models: [
             {
-                src: `${path}/ant_computer/ant/ant_computer.gltf`,
-                id: "ant_computer",
+                src: `${path}/ant_fishing/ant/ant_fishing.gltf`,
+                id: "ant_fishing",
                 type: "gltf",
                 animated: true,
                 props: {
-                    scale: {x: .15, y: .15, z: .15},
-                    position: {x: 0, y: 1.75, z: 1},
-                    rotation: {x: 0, y: Math.PI, z: 0},
+                    scale: {x: 2.5, y: 2.5, z: 2.5},
+                    position: {x: -.5, y: 2.5, z: -1},
+                    rotation: {x: 0, y: Math.PI / 2, z: 0},
                 },
             },
             {

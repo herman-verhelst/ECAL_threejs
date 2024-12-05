@@ -41,7 +41,7 @@ export default class MainScene {
         window.addEventListener('keydown', (e) => {
             this.fruitControllers.forEach((fruitController) => {
                 //if (!fruitController.isAnimating) fruitController.startAnimation();
-                if (e.key === 'Enter') fruitController.startAnimation();
+                if (e.key === 'Enter') fruitController.animate();
             })
         })
     }
@@ -53,7 +53,7 @@ export default class MainScene {
                 this.initializeBasicSettings();
                 this.setupRenderer();
                 this.setupCamera();
-                this.setupControls();
+                //this.setupControls();
                 this.setupLights();
                 this.setupFloor();
                 this.createModels();
