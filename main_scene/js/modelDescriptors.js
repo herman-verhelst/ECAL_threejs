@@ -200,7 +200,9 @@ export const modelDescriptors = [
                     position: {x: 0, y: 0, z: 0},
                     rotation: {x: 0, y: 0, z: 0},
                 },
+
             },
+
         ],
     },
     /*{
@@ -236,6 +238,38 @@ export const modelDescriptors = [
                     rotation: {x: 0, y: 0, z: 0},
                 },
             },
+
+            type = 'fruit',
+            fruit = 'MANDARINE',
+            uid = 'green',
+            props = {
+                scale = {x: 0.8, y: 0.8, z: 0.8},
+                position = {x: 2, y: 0, z: -2},
+                rotation = {x: 0, y: 0, z: 0},
+            },
+
+            models = [
+                src: `${path}/ant_Mandarine/mandarineTOP/mandarineTOP.gltf`,
+                id: "mandarine_TOP",
+                type: "gltf",
+                animated: false,
+                rotationAnimation: true,
+                props: {
+                    scale: {x: 20, y: 20, z: 20},
+                    position: {x: 5.7, y: 8.5, z: 4.25},
+                    rotation: {x: 0, y: .05, z: 0},
+                },
+
+                src: `${path}/ant_Mandarine/mandarineBOTTOM/mandarineBOTTOM.gltf`,
+                id: "mandarine_BOTTOM",
+                type: "gltf",
+                animated: false,
+                props: {
+                    scale: {x: 20, y: 20, z: 20},
+                    position: {x: 4, y: 3, z: 3},
+                    rotation: {x: 0, y: 0, z: 0},
+                },
+                
         ],
     },*/
 ];
