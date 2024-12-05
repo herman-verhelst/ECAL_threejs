@@ -42,12 +42,7 @@ export default class MainScene {
         this.buttons = [];
         this.init();
 
-        window.addEventListener('keydown', (e) => {
-            this.fruitControllers.forEach((fruitController) => {
-                //if (!fruitController.isAnimating) fruitController.startAnimation();
-                if (e.key === 'Enter') fruitController.animate();
-            })
-        })
+
     }
 
     async init() {
@@ -57,7 +52,7 @@ export default class MainScene {
                 this.initializeBasicSettings();
                 this.setupRenderer();
                 this.setupCamera();
-                this.setupControls();
+                //this.setupControls();
                 this.setupLights();
                 this.setupBloom();
                 this.setupFloor();
@@ -230,6 +225,18 @@ export default class MainScene {
         this.render = this.render.bind(this);
         window.addEventListener("resize", this.onResize);
 
+        window.addEventListener('keydown', (e) => {
+            this.fruitControllers.forEach((fruitController) => {
+                //if (!fruitController.isAnimating) fruitController.startAnimation();
+                if (e.key === 'Enter') fruitController.animate();
+            })
+        })
+
+        for (let i = 0; i < this.fruitControllers.length; i++) {
+            window.addEventListener('keydown', (e) => {
+                if (e.key == i + 1) this.fruitControllers[i].animate();
+            })
+        }
     }
 
     /**
