@@ -3,7 +3,6 @@ import {FruitElement} from "./FruitElement.js";
 import {gsap} from "gsap";
 import {setLocation} from "../utils/LocationUtil.js";
 import {setEmissiveMaterial, setMaterialOnLoadedModels} from "../utils/MaterialUtil.js";
-import {Car} from "../animations/Car.js";
 import Fire from "../animations/Fire.js";
 
 const gsapDuration = .2;

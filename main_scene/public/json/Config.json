@@ -22,14 +22,14 @@
       "uid": "black",
       "title": "fireworks",
       "color": "#141415",
-      "emissiveIntensity": "10"
+      "emissiveIntensity": "5"
     },
     {
       "name": "shana-daniel",
       "uid": "blue",
       "title": "snow",
       "color": "#057b9f",
-      "emissiveIntensity": "10"
+      "emissiveIntensity": "14"
     },
     {
       "name": "steve-yann",

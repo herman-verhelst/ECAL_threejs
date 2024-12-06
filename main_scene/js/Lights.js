@@ -25,7 +25,7 @@ export default class Lights {
         this.scene.background = new THREE.Color(0xffffff);
         this.scene.fog = new THREE.Fog('#a50909', 10, 100);
 
-        this.ambientLight = new THREE.AmbientLight('#e8ae8e', .5);
+        this.ambientLight = new THREE.AmbientLight('#e8ae8e', 2.25);
         this.scene.add(this.ambientLight);
 
         this.spotLight = new THREE.SpotLight('#dd4e0e', 2000);
@@ -45,8 +45,8 @@ export default class Lights {
         const spotLightHelper = new THREE.SpotLightHelper(this.spotLight, 5);
         //this.scene.add(spotLightHelper);
 
-        this.dirLight = new THREE.DirectionalLight('#d2e19d', 5);
-        this.dirLight.position.set(-8, 50, 33);
+        this.dirLight = new THREE.DirectionalLight('#d2e19d', 2.5);
+        this.dirLight.position.set(-11, 50, 20);
         this.dirLight.castShadow = true;
         this.dirLight.shadow.camera.near = 0.1;
         this.dirLight.shadow.camera.far = 500;

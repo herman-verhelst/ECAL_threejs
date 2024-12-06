@@ -26,11 +26,11 @@ export const modelDescriptors = [
         material: materials.plate,
         props: {
             scale: {x: 1, y: 1, z: 1},
-            position: {x: 0, y: 0.75, z: 11},
+            position: {x: -3, y: 0.75, z:12},
             rotation: {x: 0, y: -Math.PI / 2, z: 0},
         },
     },
-    {
+   {
         type: 'fruit',
         fruit: Fruit.PINEAPPLE,
         uid: 'green',
