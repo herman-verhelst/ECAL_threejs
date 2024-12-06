@@ -45,6 +45,7 @@ export const modelDescriptors = [
                 id: "ant_computer",
                 type: "gltf",
                 animated: true,
+                computerScreenAnimation: true,
                 props: {
                     scale: {x: .15, y: .15, z: .15},
                     position: {x: -1, y: 4, z: 0},

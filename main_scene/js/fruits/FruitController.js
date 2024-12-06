@@ -2,7 +2,7 @@ import * as THREE from "three";
 import {FruitElement} from "./FruitElement.js";
 import {gsap} from "gsap";
 import {setLocation} from "../utils/LocationUtil.js";
-import {setMaterialOnLoadedModels} from "../utils/MaterialUtil.js";
+import {setEmissiveMaterial, setMaterialOnLoadedModels} from "../utils/MaterialUtil.js";
 import {Car} from "../animations/Car.js";
 import Fire from "../animations/Fire.js";
 
@@ -20,6 +20,30 @@ export class FruitController {
 
     fire = [];
     fireAnimations = [];
+
+    computerScreenAnimation;
+    screen;
+    computerScreenColours = [
+        {
+            colour: '#fff',
+            intensity: 5,
+            time: 50
+        },
+        {
+            colour: '#0f0',
+            intensity: 10,
+            time: 100
+
+        },
+        {
+            colour: '#000',
+            intensity: 1,
+            time: 20
+        },
+    ];
+    currentColourIndex = 0;
+    currentTime = 0;
+    lastColourUpdate;
 
     elements = [];
     mixers = [];
@@ -89,7 +113,6 @@ export class FruitController {
             }
         }
 
-
         this.elements.forEach((element) => {
 
             if (!element.object.rotationAnimation) return;
@@ -147,16 +170,34 @@ export class FruitController {
 
     tick() {
         const delta = this.clock.getDelta();
+        const performanceNow = performance.now()
 
         if (this.fire) {
             this.fire.forEach(f => {
-                f.update(performance.now() * .0005)
+                f.update(performanceNow * .0005)
             });
+        }
+
+        if (!this.lastColourUpdate) {
+
+            this.lastColourUpdate = performanceNow; // Initialize if undefined
+        }
+
+        if (this.animate && this.screen) {
+            if (performanceNow - this.lastColourUpdate >= this.currentTime) { // Check if 2 seconds have passed
+                this.currentColourIndex = Math.floor(Math.random() * this.computerScreenColours.length);
+                const current = this.computerScreenColours[this.currentColourIndex]
+                this.currentTime = current.time;
+                setEmissiveMaterial(this.screen, current.colour, current.intensity)
+                this.lastColourUpdate = performanceNow; // Reset the timer
+            }
         }
 
         this.mixers.forEach((mixer) => {
             mixer.update(delta);
         });
+
+
     }
 
     addElement(model) {
@@ -170,6 +211,10 @@ export class FruitController {
                 this.mixers.push(mixer);
                 this.actions.push(mixer.clipAction(model.animation[i]))
             }
+        }
+
+        if (model.computerScreenAnimation) {
+            this.screen = object.children.find((child) => child.name === 'screen');
         }
 
         if (model.fire) {

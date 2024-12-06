@@ -1,9 +1,10 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v4.2.57",
+		"generator":"Khronos glTF Blender I/O v4.2.70",
 		"version":"2.0"
 	},
 	"extensionsUsed":[
+		"KHR_materials_emissive_strength",
 		"KHR_materials_specular"
 	],
 	"scene":0,
@@ -1024,7 +1025,7 @@
 		},
 		{
 			"mesh":4,
-			"name":"63.002",
+			"name":"screen",
 			"rotation":[
 				0,
 				1,
@@ -3139,9 +3140,12 @@
 				}
 			},
 			"name":"MI_Ari_CrazyBody",
+			"normalTexture":{
+				"index":0
+			},
 			"pbrMetallicRoughness":{
 				"baseColorTexture":{
-					"index":0
+					"index":1
 				},
 				"metallicFactor":0,
 				"roughnessFactor":0.5527864098548889
@@ -3166,9 +3170,9 @@
 			"name":"Material.084",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
-					0.3046611547470093,
-					0.8012357354164124,
-					0,
+					0.7414435148239136,
+					0.9582691192626953,
+					0.7356061935424805,
 					1
 				],
 				"metallicFactor":0,
@@ -3180,9 +3184,9 @@
 			"name":"Material.089",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
-					0.024914689362049103,
-					0.1423996537923813,
-					0.0010906499810516834,
+					0.11609923839569092,
+					0.12683257460594177,
+					0.11388339847326279,
 					1
 				],
 				"metallicFactor":0,
@@ -3191,6 +3195,16 @@
 		},
 		{
 			"doubleSided":true,
+			"emissiveFactor":[
+				0.051532573997974396,
+				1,
+				0.0032431886065751314
+			],
+			"extensions":{
+				"KHR_materials_emissive_strength":{
+					"emissiveStrength":20
+				}
+			},
 			"name":"Material.074",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
@@ -3208,9 +3222,9 @@
 			"name":"Material.073",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
-					0.03234097361564636,
-					0.05278656259179115,
-					0,
+					0.029923338443040848,
+					0.029923338443040848,
+					0.029923338443040848,
 					1
 				],
 				"metallicFactor":0,
@@ -3222,37 +3236,9 @@
 			"name":"Material.081",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
-					0.006987391039729118,
-					0.06152673810720444,
-					0,
-					1
-				],
-				"metallicFactor":0,
-				"roughnessFactor":0.5
-			}
-		},
-		{
-			"doubleSided":true,
-			"name":"Material.087",
-			"pbrMetallicRoughness":{
-				"baseColorFactor":[
-					0.08682648837566376,
-					0.19017702341079712,
-					0.01313802506774664,
-					1
-				],
-				"metallicFactor":0,
-				"roughnessFactor":0.5
-			}
-		},
-		{
-			"doubleSided":true,
-			"name":"Material.086",
-			"pbrMetallicRoughness":{
-				"baseColorFactor":[
-					0.009672323241829872,
-					0.03833228349685669,
-					0.0013495715102180839,
+					0.01660577952861786,
+					0.01840018294751644,
+					0.016229474917054176,
 					1
 				],
 				"metallicFactor":0,
@@ -3264,9 +3250,9 @@
 			"name":"Material.085",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
-					0.2460688054561615,
+					0.4020296037197113,
 					0.4263235926628113,
-					0.03746827319264412,
+					0.37391555309295654,
 					1
 				],
 				"metallicFactor":0,
@@ -3278,9 +3264,9 @@
 			"name":"Material.088",
 			"pbrMetallicRoughness":{
 				"baseColorFactor":[
-					0.08159494400024414,
-					0.2611638009548187,
-					0.006643995642662048,
+					0.2611321210861206,
+					0.2611321210861206,
+					0.2611321210861206,
 					1
 				],
 				"metallicFactor":0,
@@ -3401,7 +3387,7 @@
 						"TEXCOORD_0":35
 					},
 					"indices":36,
-					"material":7
+					"material":3
 				}
 			]
 		},
@@ -3415,7 +3401,7 @@
 						"TEXCOORD_0":39
 					},
 					"indices":40,
-					"material":8
+					"material":3
 				}
 			]
 		},
@@ -3429,7 +3415,7 @@
 						"TEXCOORD_0":43
 					},
 					"indices":44,
-					"material":9
+					"material":7
 				}
 			]
 		},
@@ -3443,7 +3429,7 @@
 						"TEXCOORD_0":47
 					},
 					"indices":48,
-					"material":10
+					"material":8
 				}
 			]
 		}
@@ -3452,9 +3438,18 @@
 		{
 			"sampler":0,
 			"source":0
+		},
+		{
+			"sampler":0,
+			"source":1
 		}
 	],
 	"images":[
+		{
+			"mimeType":"image/png",
+			"name":"ant_(2)",
+			"uri":"ant_2.png"
+		},
 		{
 			"mimeType":"image/png",
 			"name":"ant_(1)",
