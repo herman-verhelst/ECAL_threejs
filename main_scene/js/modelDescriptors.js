@@ -246,9 +246,9 @@ export const modelDescriptors = [
                 animated: false,
                 rotationAnimation: true,
                 props: {
-                    scale: {x: 1, y: 1, z: 1},
-                    position: {x: 1.2, y: 1.4, z: 0},
-                    rotation: {x: 0, y: 0, z: 0},
+                    scale: {x: 25.5, y: 25.5, z: 25.5},
+                    position: {x: 1, y: 1.5, z: 0.15},
+                    rotation: {x: -0.1, y: 0, z: 0},
                 },
             },
             {
@@ -257,9 +257,9 @@ export const modelDescriptors = [
                 type: "gltf",
                 animated: false,
                 props: {
-                    scale: {x: 1, y: 1, z: 1},
-                    position: {x: 0, y: 0, z: 0},
-                    rotation: {x: 0, y: 0, z: 0},
+                    scale: {x: 25.5, y: 25.5, z: 25.5},
+                    position: {x: 0, y: -.2, z: -.6},
+                    rotation: {x: 0, y: 0, z: 0}, // Math.PI/2
                 },
             },
 

@@ -1,6 +1,6 @@
 {
 	"asset":{
-		"generator":"Khronos glTF Blender I/O v4.2.70",
+		"generator":"Khronos glTF Blender I/O v4.2.57",
 		"version":"2.0"
 	},
 	"scene":0,
@@ -15,7 +15,7 @@
 	"nodes":[
 		{
 			"mesh":0,
-			"name":"mesh.015"
+			"name":"arancia1"
 		}
 	],
 	"materials":[
@@ -26,23 +26,14 @@
 				"baseColorTexture":{
 					"index":0
 				},
-				"metallicFactor":0
-			}
-		},
-		{
-			"doubleSided":true,
-			"name":"main.001",
-			"pbrMetallicRoughness":{
-				"baseColorTexture":{
-					"index":1
-				},
-				"metallicFactor":0
+				"metallicFactor":0,
+				"roughnessFactor":0.5527864098548889
 			}
 		}
 	],
 	"meshes":[
 		{
-			"name":"mesh.016",
+			"name":"Mesh",
 			"primitives":[
 				{
 					"attributes":{
@@ -52,15 +43,6 @@
 					},
 					"indices":3,
 					"material":0
-				},
-				{
-					"attributes":{
-						"POSITION":4,
-						"NORMAL":5,
-						"TEXCOORD_0":6
-					},
-					"indices":7,
-					"material":1
 				}
 			]
 		}
@@ -69,155 +51,86 @@
 		{
 			"sampler":0,
 			"source":0
-		},
-		{
-			"sampler":0,
-			"source":1
 		}
 	],
 	"images":[
 		{
 			"mimeType":"image/jpeg",
-			"name":"orange1TEXjpeg",
-			"uri":"orange1TEXjpeg.jpg"
-		},
-		{
-			"mimeType":"image/jpeg",
-			"name":"texgen_0",
-			"uri":"texgen_0.jpg"
+			"name":"texture",
+			"uri":"texture.jpg"
 		}
 	],
 	"accessors":[
 		{
 			"bufferView":0,
 			"componentType":5126,
-			"count":11822,
+			"count":5262,
 			"max":[
-				1.1723777055740356,
-				1.1877535581588745,
-				1.1939518451690674
+				0.04268131032586098,
+				0.05228147655725479,
+				0.05703013390302658
 			],
 			"min":[
-				-1.2371230125427246,
-				0.750334620475769,
-				-0.9775958061218262
+				-0.04352133348584175,
+				-0.0007083974778652191,
+				-0.02713397517800331
 			],
 			"type":"VEC3"
 		},
 		{
 			"bufferView":1,
 			"componentType":5126,
-			"count":11822,
+			"count":5262,
 			"type":"VEC3"
 		},
 		{
 			"bufferView":2,
 			"componentType":5126,
-			"count":11822,
+			"count":5262,
 			"type":"VEC2"
 		},
 		{
 			"bufferView":3,
 			"componentType":5123,
-			"count":67533,
-			"type":"SCALAR"
-		},
-		{
-			"bufferView":4,
-			"componentType":5126,
-			"count":8783,
-			"max":[
-				1.229300618171692,
-				1.1257596015930176,
-				1.196470022201538
-			],
-			"min":[
-				-1.2512998580932617,
-				-0.03854670748114586,
-				-0.9967861175537109
-			],
-			"type":"VEC3"
-		},
-		{
-			"bufferView":5,
-			"componentType":5126,
-			"count":8783,
-			"type":"VEC3"
-		},
-		{
-			"bufferView":6,
-			"componentType":5126,
-			"count":8783,
-			"type":"VEC2"
-		},
-		{
-			"bufferView":7,
-			"componentType":5123,
-			"count":48651,
+			"count":19743,
 			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
 		{
 			"buffer":0,
-			"byteLength":141864,
+			"byteLength":63144,
 			"byteOffset":0,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":141864,
-			"byteOffset":141864,
+			"byteLength":63144,
+			"byteOffset":63144,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":94576,
-			"byteOffset":283728,
+			"byteLength":42096,
+			"byteOffset":126288,
 			"target":34962
 		},
 		{
 			"buffer":0,
-			"byteLength":135066,
-			"byteOffset":378304,
-			"target":34963
-		},
-		{
-			"buffer":0,
-			"byteLength":105396,
-			"byteOffset":513372,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":105396,
-			"byteOffset":618768,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":70264,
-			"byteOffset":724164,
-			"target":34962
-		},
-		{
-			"buffer":0,
-			"byteLength":97302,
-			"byteOffset":794428,
+			"byteLength":39486,
+			"byteOffset":168384,
 			"target":34963
 		}
 	],
 	"samplers":[
 		{
 			"magFilter":9729,
-			"minFilter":9987,
-			"wrapS":33071,
-			"wrapT":33071
+			"minFilter":9987
 		}
 	],
 	"buffers":[
 		{
-			"byteLength":891732,
+			"byteLength":207872,
 			"uri":"orange_BOTTOM.bin"
 		}
 	]
