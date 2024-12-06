@@ -30,8 +30,8 @@ export class FruitController {
             time: 50
         },
         {
-            colour: '#0f0',
-            intensity: 10,
+            colour: '#38FF38',
+            intensity: 2,
             time: 100
 
         },

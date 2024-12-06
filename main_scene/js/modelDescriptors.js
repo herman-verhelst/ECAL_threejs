@@ -165,7 +165,7 @@ export const modelDescriptors = [
                 props: {
                     scale: {x: .15, y: .15, z: .15},
                     position: {x: 1.1, y: 3.8, z: -0.5},
-                    rotation: {x: 0, y: Math.PI, z: 0},
+                    rotation: {x: 0, y: 0, z: 0},
                 },
             },
         ],
@@ -236,8 +236,18 @@ export const modelDescriptors = [
                 animated: true,
                 props: {
                     scale: {x: .6, y: .6, z: .6},
-                    position: {x: 0, y: 1.1, z: 0},
+                    position: {x: 0, y: 1, z: -.2},
                     rotation: {x: 0, y: Math.PI, z: 0},
+                },
+            },
+            {
+                src: `${path}/ant_liftingWeights/gym_objects/pesi/pesi.gltf`,
+                id: "pesi",
+                type: "gltf",
+                props: {
+                    scale: {x: .4, y: .4, z: .4},
+                    position: {x: -.5, y: 1, z: .4},
+                    rotation: {x: 0, y: Math.PI - .5, z: 0},
                 },
             },
             {
