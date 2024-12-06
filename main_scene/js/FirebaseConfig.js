@@ -52,7 +52,7 @@ class FirebaseConfig {
   }
 
   reset() {
-    this.sendData("connections_orange" + this.UID, null);
+    this.sendData("connections" + this.UID, null);
   }
 }
 export default new FirebaseConfig();

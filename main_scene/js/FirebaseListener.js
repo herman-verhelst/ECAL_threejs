@@ -27,7 +27,7 @@ export default class FirebaseListener {
    * Configure l'écouteur sur le nœud "connections" de Firebase
    */
   setupListener() {
-    FirebaseConfig.listenToData("connections_orange", (data) => {
+    FirebaseConfig.listenToData("connections", (data) => {
       // Ignore le premier appel pour éviter les effets indésirables à l'initialisation
       if (!this.firstCall) {
         this.firstCall = true;
@@ -44,7 +44,7 @@ export default class FirebaseListener {
    */
   handleFirebaseData(data) {
     // Ajoute le message à la couche de débogage
-    this.debugLayer.addMessage(data);
+    //this.debugLayer.addMessage(data);
 
     // Traite chaque entrée de données
     Object.keys(data).forEach((key) => {
@@ -79,8 +79,8 @@ export default class FirebaseListener {
 
     // Vérifie si un changement d'état est nécessaire
     return (
-      (entry.position === "up") ||
-      (entry.position === "down")
+      (shape.isAnimating && entry.position === "up") ||
+      (!shape.isAnimating && entry.position === "down")
     );
   }
 

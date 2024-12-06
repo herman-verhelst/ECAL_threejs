@@ -14,7 +14,7 @@ export class FruitController {
 
     group;
 
-    isAnimating;
+    isAnimating = false;
     uid;
 
     fire = [];
@@ -79,16 +79,18 @@ export class FruitController {
             if (this.animate) position = 'up'
             else position = 'down'
         }
+        console.log(position)
         if (position === 'down') {
-            this.animate = true;
+            this.isAnimating = true;
             this.startAnimation();
         } else if (position === 'up') {
-            this.animate = false;
+            this.isAnimating = false;
             this.endAnimation();
         }
     }
 
     startAnimation() {
+
         this.actions.forEach((action) => {
             action.reset();
             action.setLoop(THREE.LoopOnce, 0)

@@ -29,7 +29,7 @@ export default class Button  {
                 gsap.to(this.accent.position, {y: .8, duration: .05})
             }
 
-            FirebaseConfig.sendData("connections_orange/" + FirebaseConfig.UID, {
+            FirebaseConfig.sendData("connections/" + FirebaseConfig.UID, {
                 uid: this.uid,
                 target: this.target,
                 date: Date.now(),
