@@ -19,6 +19,7 @@ export class FruitController {
     uid;
 
     fire = [];
+    fireAnimations = [];
 
     elements = [];
     mixers = [];
@@ -39,9 +40,6 @@ export class FruitController {
 
         this.scene.add(this.group)
 
-        const axesHelper = new THREE.AxesHelper(2); // Size of the helper
-        this.group.add(axesHelper);
-
         this.elements = model.models.map((model) => {
             this.addElement(model);
             return new FruitElement(model);
@@ -49,6 +47,15 @@ export class FruitController {
     }
 
     checkAnimation(position) {
+        this.fireAnimations.forEach((fireAnimation) => {
+            fireAnimation.kill();
+        })
+        this.fireAnimations = [];
+
+        if (!position) {
+            if (this.animate) position = 'up'
+            else position = 'down'
+        }
         if (position === 'down') {
             this.animate = true;
             this.startAnimation();
@@ -60,7 +67,6 @@ export class FruitController {
     }
 
     startAnimation() {
-
         this.actions.forEach((action) => {
             action.reset();
             action.setLoop(THREE.LoopOnce, 0)
@@ -74,13 +80,13 @@ export class FruitController {
             let delay = [0,2 ];
             for (let i = 0; i < this.fire.length; i++) {
 
-                gsap.to(this.fire[i], {
+                this.fireAnimations.push(gsap.to(this.fire[i], {
                     value: scales[i],
                     delay: delay[i],
                     duration: 5, onUpdate: () => {
                         this.fire[i].setScale(this.fire[i].value, this.fire[i].value, this.fire[i].value)
                     }
-                })
+                }));
             }
         }
 
@@ -113,13 +119,13 @@ export class FruitController {
 
         if (this.fire) {
             for (let i = 0; i < this.fire.length; i++) {
-                gsap.to(this.fire[i], {
+                this.fireAnimations.push(gsap.to(this.fire[i], {
                     value: 0,
                     duration: .2, onUpdate: () => {
                         this.fire[i].setScale(this.fire[i].value, this.fire[i].value, this.fire[i].value)
 
                     }
-                })
+                }));
             }
 
         }

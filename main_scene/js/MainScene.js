@@ -254,13 +254,13 @@ export default class MainScene {
         window.addEventListener('keydown', (e) => {
             this.fruitControllers.forEach((fruitController) => {
                 //if (!fruitController.isAnimating) fruitController.startAnimation();
-                if (e.key === 'Enter') fruitController.animate();
+                if (e.key === 'Enter') fruitController.checkAnimation();
             })
         })
 
         for (let i = 0; i < this.fruitControllers.length; i++) {
             window.addEventListener('keydown', (e) => {
-                if (e.key == i + 1) this.fruitControllers[i].animate();
+                if (e.key == i + 1) this.fruitControllers[i].checkAnimation();
             })
         }
     }
