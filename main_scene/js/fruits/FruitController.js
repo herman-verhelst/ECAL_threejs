@@ -76,10 +76,10 @@ export class FruitController {
         this.fireAnimations = [];
 
         if (!position) {
-            if (this.animate) position = 'up'
+            if (this.isAnimating) position = 'up'
             else position = 'down'
         }
-        console.log(position)
+
         if (position === 'down') {
             this.isAnimating = true;
             this.startAnimation();
@@ -184,7 +184,7 @@ export class FruitController {
             this.lastColourUpdate = performanceNow; // Initialize if undefined
         }
 
-        if (this.animate && this.screen) {
+        if (this.isAnimating && this.screen) {
             if (performanceNow - this.lastColourUpdate >= this.currentTime) { // Check if 2 seconds have passed
                 this.currentColourIndex = Math.floor(Math.random() * this.computerScreenColours.length);
                 const current = this.computerScreenColours[this.currentColourIndex]
