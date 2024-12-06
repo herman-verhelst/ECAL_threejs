@@ -59,8 +59,7 @@ export class FruitController {
         if (position === 'down') {
             this.animate = true;
             this.startAnimation();
-        }
-        else if (position === 'up') {
+        } else if (position === 'up') {
             this.animate = false;
             this.endAnimation();
         }
@@ -76,14 +75,14 @@ export class FruitController {
         });
 
         if (this.fire) {
-            let scales = [.5, 2];
-            let delay = [0,2 ];
+            let scales = [.5, 3];
+            let delay = [4, 6];
             for (let i = 0; i < this.fire.length; i++) {
 
                 this.fireAnimations.push(gsap.to(this.fire[i], {
                     value: scales[i],
                     delay: delay[i],
-                    duration: 5, onUpdate: () => {
+                    duration: 3, onUpdate: () => {
                         this.fire[i].setScale(this.fire[i].value, this.fire[i].value, this.fire[i].value)
                     }
                 }));
@@ -176,14 +175,12 @@ export class FruitController {
         if (model.fire) {
 
             const firePositions = [
-                new THREE.Vector3(-1.2, .5
-                    ,.65),
+                new THREE.Vector3(-1.2, .6, .65),
                 new THREE.Vector3(0, .1, 1)
             ];
 
             for (let i = 0; i < firePositions.length; i++) {
                 let fire = new Fire();
-                fire.setScale(3, 3, 3);
                 const firePosition = new THREE.Vector3(model.props.position.x, model.props.position.y, model.props.position.z)
                     .add(this.group.position)
                     .add(firePositions[i]);
