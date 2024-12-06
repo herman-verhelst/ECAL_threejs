@@ -48,10 +48,15 @@ export class FruitController {
         })
     }
 
-    animate() {
-        this.isAnimating = !this.isAnimating;
-        if (this.isAnimating) this.startAnimation();
-        else this.endAnimation();
+    checkAnimation(position) {
+        if (position === 'down') {
+            this.animate = true;
+            this.startAnimation();
+        }
+        else if (position === 'up') {
+            this.animate = false;
+            this.endAnimation();
+        }
     }
 
     startAnimation() {

@@ -109,11 +109,9 @@ export default class MainScene {
             accent.scale.set(1, 1, 1);
             accent.rotation.set(0, 0, 0);
             accent.position.set(position.x, position.y + .5, position.z);
-            console.log( otherUids[i].emissiveIntensity)
             setEmissiveMaterial(accent, otherUids[i].color, otherUids[i].emissiveIntensity);
 
             group.add(cube, accent);
-            console.log(otherUids[i])
             this.buttons.push(new Button({
                 target: otherUids[i].uid,
                 mesh: cube,
@@ -127,7 +125,6 @@ export default class MainScene {
         //this.createButtons();
 
         this.models.forEach((model) => {
-            console.log(model.type)
             if (model.type === 'fruit') {
                 let fruitController = new FruitController(this.scene, model)
                 this.fruitControllers.push(fruitController);
@@ -143,7 +140,6 @@ export default class MainScene {
 
                 let buttonGroup = new THREE.Group();
                 buttonGroup.add(object);
-                console.log(this.otherUIDs.slice(0,3))
                 this.createButtons(cubePositions, buttonGroup, this.otherUIDs.slice(0,3))
 
                 setLocation(model.props, buttonGroup);
@@ -157,7 +153,6 @@ export default class MainScene {
                     let buttonGroup = new THREE.Group();
                     buttonGroup.add(mirroredObject);
 
-                    console.log(this.otherUIDs.slice(0,6))
                     this.createButtons(cubePositions, buttonGroup, this.otherUIDs.slice(3,6))
 
                     setLocation(model.props, buttonGroup, true);
@@ -166,7 +161,6 @@ export default class MainScene {
                 }
             }
             else {
-                console.log(model)
                 let object = model.object;
                 setLocation(model.props, object);
                 setMaterialOnLoadedModels(model);
