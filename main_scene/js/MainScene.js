@@ -59,7 +59,7 @@ export default class MainScene {
                 this.setupFloor();
                 this.createModels();
                 this.setupEventListeners();
-                this.setupGUI();
+                //this.setupGUI();
                 this.setupInteraction();
                 this.FirebaseListener = new FirebaseListener(this.fruitControllers);
                 this.render();

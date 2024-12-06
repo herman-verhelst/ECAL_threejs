@@ -98,8 +98,8 @@ export class FruitController {
         });
 
         if (this.fire) {
-            let scales = [.5, 3];
-            let delay = [4, 6];
+            let scales = [.5, 3.5];
+            let delay = [4,6];
             for (let i = 0; i < this.fire.length; i++) {
 
                 this.fireAnimations.push(gsap.to(this.fire[i], {
@@ -219,8 +219,10 @@ export class FruitController {
         if (model.fire) {
 
             const firePositions = [
-                new THREE.Vector3(-1.2, .6, .65),
-                new THREE.Vector3(0, .1, 1)
+                new THREE.Vector3(-1.6, .6, 1.2),
+                new THREE.Vector3(-.1, .1, 1.2
+
+                )
             ];
 
             for (let i = 0; i < firePositions.length; i++) {

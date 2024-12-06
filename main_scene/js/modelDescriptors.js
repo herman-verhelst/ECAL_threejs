@@ -212,7 +212,7 @@ export const modelDescriptors = [
                 fire: true,
                 props: {
                     scale: {x: 1.2, y: 1.2, z: 1.2},
-                    position: {x: 0, y: 1.5, z: 0},
+                    position: {x: 0, y: 1.5, z: -0.25},
                     rotation: {x: 0, y: -Math.PI / 2, z: 0},
                 },
             }

@@ -20,7 +20,7 @@ export default class FirebaseListener {
    * Initialise la couche de débogage
    */
   initDebugLayer() {
-    this.debugLayer = new DebugLayer();
+    //this.debugLayer = new DebugLayer();
   }
 
   /**
